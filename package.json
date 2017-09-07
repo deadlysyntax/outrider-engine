@@ -1,0 +1,11 @@
+{
+  "name": "outrider",
+  "version": "1.0.0",
+  "description": "Cryptocurrency Arbitrage and Trading Platform",
+  "main": "start.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Jaap Nieuwland",
+  "license": "ISC"
+}
