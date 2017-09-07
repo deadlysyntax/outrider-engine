@@ -2,28 +2,42 @@ import * as dotenv from 'dotenv'
 import * as IR from 'independentreserve'
 import * as CS from 'coinspot-api'
 
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/forkJoin';
+
 // Grab configuration
 dotenv.config()
 
+let IRClient = new IR( process.env.IR_KEY,  process.env.IR_SECRET)
+let CSClient = new CS( process.env.CS_KEY,  process.env.CS_SECRET)
 
-// Test public data APIs
-//var publicClient = new IR()
-
-
-var IRClient = new IR( process.env.IR_KEY,  process.env.IR_SECRET)
-
-// get ticker for BTCUSD
-//IRClient.getMarketSummary("Eth", "Aud", console.log)
-
-// get order book for BTCAUD
-//publicClient.getOrderBook("Xbt", "Aud", console.log);
-
-// get last 20 BTCAUD trades
-//publicClient.getRecentTrades("Xbt", "Aud", 20, console.log);
+let run = () => {
+    //
+    let ind = Observable.create( observer => {
+        return IRClient.getMarketSummary("Xbt", "Aud", (error, response) => {
+            console.log(response.CurrentLowestOfferPrice, 'IR')
+            return observer.next(response.CurrentLowestOfferPrice)
+        })
+    })
 
 
-var CSClient = new CS( process.env.CS_KEY,  process.env.CS_SECRET)
 
-CSClient.quotesell('BTC', '1' function(e, data) {
- 	console.log(data)
-});
+    let coin = Observable.create( observer => {
+        return CSClient.quotesell('BTC', '1', (error, response) => {
+     	      console.log(JSON.parse(response).quote, 'CS')
+              return observer.next(JSON.parse(response).quote)
+        })
+    })
+    //console.log(typeof coin, 'coi')
+
+    Observable.forkJoin([ind, coin]).subscribe(results => {
+        console.log(results)
+
+
+    })
+
+    // Set this all to happen again in another spell
+    setTimeout(run, 60000) // Reun this every minute
+
+}
+run()
