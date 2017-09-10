@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 
-import * from '../libs/interfaces'
+import { marketSummary } from '../libs/interfaces'
 
 
 class IndependentReserve {
@@ -41,7 +41,7 @@ class IndependentReserve {
         let ir = Observable.fromPromise(this.getMarketData() )
 
         ir.subscribe( response => {
-            console.log( this.fieldMapping('ticker', response) )
+            console.log( 'idr', this.marketSummaryFieldMapping(response) )
         },
         error => {
             console.log(error)
@@ -52,10 +52,10 @@ class IndependentReserve {
 
 
 
-    fieldMapping( data: any ): marketSummary{
+    marketSummaryFieldMapping( data: any ): marketSummary{
         return {
             dayHigh:   data.DayHighestPrice,
-            dayLow:    data.DayLowestprice,
+            dayLow:    data.DayLowestPrice,
             lastPrice: data.LastPrice,
             bidPrice:  data.CurrentHighestBidPrice,
             askPrice:  data.CurrentLowestOfferPrice,

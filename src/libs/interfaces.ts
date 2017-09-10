@@ -1,7 +1,7 @@
 export interface marketSummary {
-    dayHigh:   decimal;
-    dayLow:    decimal;
-    lastPrice: decimal;
-    bidPrice:  decimal;
-    askPrice:  decimal;
+    dayHigh:   number;
+    dayLow:    number;
+    lastPrice: number;
+    bidPrice:  number;
+    askPrice:  number;
 }

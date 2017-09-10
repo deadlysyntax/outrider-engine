@@ -3,6 +3,9 @@ import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 
+import { marketSummary } from '../libs/interfaces'
+
+
 
 class BitFinex {
 
@@ -39,7 +42,7 @@ class BitFinex {
 
 
         bfx.subscribe( response => {
-            console.log( this.fieldMapping('tickers', response[0]))
+            console.log( 'bfx', this.marketSummaryFieldMapping(response[0]))
         },
         error => {
             console.log(error)
@@ -50,24 +53,13 @@ class BitFinex {
 
 
 
-    fieldMapping( type: string, data: Array<any> ): any{
-        switch(type){
-            case 'tickers':
-                return {
-                    SYMBOL:            data[0],
-                    BID:               data[1],
-                    BID_SIZE:          data[2],
-                    ASK:               data[3],
-                    ASK_SIZE:          data[4],
-                    DAILY_CHANGE:      data[5],
-                    DAILY_CHANGE_PERC: data[6],
-                    LAST_PRICE:        data[7],
-                    VOLUME:            data[8],
-                    HIGH:              data[9],
-                    LOW:               data[10]
-                }
-            default:
-                return null
+    marketSummaryFieldMapping(data: Array<any> ): marketSummary {
+        return {
+            dayHigh:   data[9],
+            dayLow:    data[10],
+            lastPrice: data[7],
+            bidPrice:  data[1],
+            askPrice:  data[3],
         }
     }
 
