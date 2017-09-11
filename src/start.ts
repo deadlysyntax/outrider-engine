@@ -4,6 +4,8 @@ import {independentReserve as IndependentReserve } from './exchanges/independent
 import { bitFinex as BitFinex } from './exchanges/bitfinex'
 //import * as ws from 'ws'
 
+import { marketWatcher as MarketWatcher } from './libs/marketWatcher'
+
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
@@ -12,25 +14,10 @@ import 'rxjs/add/observable/fromPromise'
 // Grab configuration
 dotenv.config()
 
-//let IRClient = new IR( process.env.IR_KEY,  process.env.IR_SECRET)
-//let CSClient = new CS( process.env.CS_KEY,  process.env.CS_SECRET)
-
 let run = () => {
 
-    let markets             = [BitFinex, IndependentReserve]
-    let marketSummaries     = Observable.forkJoin(
-        ...markets.map( market => market.getMarketSummary() )
-    )
-
-    const subscribe = marketSummaries.subscribe(
-        market => {
-            console.log( market, 'market')
-        },
-        error => {
-            console.log(error)
-        }
-    )
-
-
+    MarketWatcher
+        .setMarkets([ BitFinex, IndependentReserve ])
+        .watch()
 }
 run()
