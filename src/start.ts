@@ -8,6 +8,7 @@ import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 
+
 // Grab configuration
 dotenv.config()
 
@@ -21,11 +22,14 @@ let run = () => {
         ...markets.map( market => market.getMarketSummary() )
     )
 
-    console.log(marketSummaries)
-
-    const subscribe = marketSummaries.subscribe( market => {
-        console.log( market, 'market')
-    })
+    const subscribe = marketSummaries.subscribe(
+        market => {
+            console.log( market, 'market')
+        },
+        error => {
+            console.log(error)
+        }
+    )
 
 
 }

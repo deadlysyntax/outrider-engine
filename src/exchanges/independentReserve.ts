@@ -3,6 +3,7 @@ import { Observable } from 'rxjs/Observable'
 import { Observer } from 'rxjs/Observer'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
+import 'rxjs/add/operator/map'
 
 import { ExchangeClass, marketSummary, feeStructure } from '../libs/interfaces'
 
@@ -51,14 +52,11 @@ class IndependentReserve implements ExchangeClass {
 
 
     getMarketSummary(): Observable<any> {
-        return Observable.create( (observer: Observer<marketSummary>) => {
-            this.getMarketData().then( response => {
-                observer.next( this.marketSummaryFieldMapping(response) )
+        return Observable
+            .fromPromise( this.getMarketData() )
+            .map( response => {
+                return this.marketSummaryFieldMapping( response )
             })
-            .catch( error => {
-                observer.error('Couldn\'t find market data')
-            })
-        })
     }
 
 
