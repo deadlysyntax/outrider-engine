@@ -1,13 +1,14 @@
 import * as request from 'request-promise'
 import { Observable } from 'rxjs/Observable'
+import { Observer } from 'rxjs/Observer';
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 
-import { marketSummary } from '../libs/interfaces'
+import { ExchangeClass, marketSummary, feeStructure } from '../libs/interfaces'
 
 
 
-class BitFinex {
+class BitFinex implements ExchangeClass {
 
     baseURL: string
 
@@ -18,7 +19,20 @@ class BitFinex {
 
 
 
-    getMarketData(){
+
+    feeStructure(): feeStructure {
+        return {
+            xbtWithdrawl: 0.0004,
+            ethWithdrawl: 0.01,
+            audWithdrawl: null,
+            makerFee:     .1,
+            takerFee:     .2
+        }
+    }
+
+
+
+    getMarketData(): Promise<any> {
         let options = {
             uri: `${this.baseURL}/tickers`,
             headers: {
@@ -37,15 +51,14 @@ class BitFinex {
 
 
 
-    getMarketSummary(): void{
-        let bfx = Observable.fromPromise( this.getMarketData() )
-
-
-        bfx.subscribe( response => {
-            console.log( 'bfx', this.marketSummaryFieldMapping(response[0]))
-        },
-        error => {
-            console.log(error)
+    getMarketSummary(): Observable<any> {
+        return Observable.create( ( observer: Observer<marketSummary> ) => {
+            this.getMarketData().then( response => {
+                observer.next( this.marketSummaryFieldMapping(response[0]) )
+            })
+            .catch( error => {
+                observer.error('Couldn\'t find market data')
+            })
         })
     }
 
@@ -53,7 +66,7 @@ class BitFinex {
 
 
 
-    marketSummaryFieldMapping(data: Array<any> ): marketSummary {
+    marketSummaryFieldMapping( data: Array<any> ): marketSummary {
         return {
             dayHigh:   data[9],
             dayLow:    data[10],

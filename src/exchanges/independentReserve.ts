@@ -1,12 +1,13 @@
 import * as request from 'request-promise'
 import { Observable } from 'rxjs/Observable'
+import { Observer } from 'rxjs/Observer'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 
-import { marketSummary } from '../libs/interfaces'
+import { ExchangeClass, marketSummary, feeStructure } from '../libs/interfaces'
 
 
-class IndependentReserve {
+class IndependentReserve implements ExchangeClass {
 
     baseURL: string
 
@@ -17,7 +18,19 @@ class IndependentReserve {
 
 
 
-    getMarketData(){
+    feeStructure(): feeStructure {
+        return {
+            xbtWithdrawl: 0.001,
+            ethWithdrawl: 0.004,
+            audWithdrawl: 0,
+            makerFee:     null,
+            takerFee:     null
+        }
+    }
+
+
+
+    getMarketData(): Promise<any> {
         let options = {
             uri: `${this.baseURL}/Public/GetMarketSummary`,
             headers: {
@@ -37,14 +50,14 @@ class IndependentReserve {
 
 
 
-    getMarketSummary(): void{
-        let ir = Observable.fromPromise(this.getMarketData() )
-
-        ir.subscribe( response => {
-            console.log( 'idr', this.marketSummaryFieldMapping(response) )
-        },
-        error => {
-            console.log(error)
+    getMarketSummary(): Observable<any> {
+        return Observable.create( (observer: Observer<marketSummary>) => {
+            this.getMarketData().then( response => {
+                observer.next( this.marketSummaryFieldMapping(response) )
+            })
+            .catch( error => {
+                observer.error('Couldn\'t find market data')
+            })
         })
     }
 
