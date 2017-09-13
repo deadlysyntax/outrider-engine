@@ -5,7 +5,7 @@ import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
 
-import { ExchangeClass, marketSummary, feeStructure } from '../libs/interfaces'
+import { ExchangeClass, marketSummary, feeStructure, currencyStructure } from '../libs/interfaces'
 
 
 class IndependentReserve implements ExchangeClass {
@@ -33,15 +33,15 @@ class IndependentReserve implements ExchangeClass {
 
 
 
-    getMarketData(): Promise<any> {
+    getMarketData( currencies: currencyStructure ): any {
         let options = {
             uri: `${this.baseURL}/Public/GetMarketSummary`,
             headers: {
                 'User-Agent': 'Request-Promise'
             },
             qs: {
-                primaryCurrencyCode:   'eth',
-                secondaryCurrencyCode: 'usd'
+                primaryCurrencyCode:   currencies.base,
+                secondaryCurrencyCode: currencies.against
             },
             json: true // Automatically parses the JSON string in the response
         };
@@ -53,9 +53,9 @@ class IndependentReserve implements ExchangeClass {
 
 
 
-    getMarketSummary(): Observable<any> {
+    getMarketSummary( currencies: currencyStructure ): Observable<any> {
         return Observable
-            .fromPromise( this.getMarketData() )
+            .fromPromise( this.getMarketData(currencies) )
             .map( response => {
                 return this.marketSummaryFieldMapping( response )
             })

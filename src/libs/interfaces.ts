@@ -24,11 +24,15 @@ export interface feeStructure {
 
 
 export interface ExchangeClass {
-    baseURL:                                     string;
-    marketName:                                  string;
-    feeStructure():                              feeStructure;
-    getMarketData():                             Promise<any>;
-    getMarketSummary():                          Observable<any>;
+    baseURL:                          string;
+    marketName:                       string;
+    feeStructure():                   feeStructure;
+    getMarketData(
+        currencies: currencyStructure
+    ): Promise<any>;
+    getMarketSummary(
+        currencies: currencyStructure
+    ):  Observable<any>;
     marketSummaryFieldMapping(
         data: Array<any>
     ): marketSummary;
@@ -38,5 +42,31 @@ export interface ExchangeClass {
 
 export interface pluginStructure {
     name: string;
-    method(): any;
+    method(
+        market: Array<marketSummary>,
+        report: reportStructure
+    ): any;
+}
+
+
+
+
+export interface currencyStructure {
+    base:    string;
+    against: string;
+}
+
+
+
+
+export interface marketLastPriceStructure {
+    price:  number;
+    market: string;
+}
+
+
+
+export interface reportStructure {
+    rank:   Array<marketLastPriceStructure>;
+    spread: number;
 }

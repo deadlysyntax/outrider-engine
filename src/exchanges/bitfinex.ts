@@ -5,7 +5,7 @@ import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
 
-import { ExchangeClass, marketSummary, feeStructure } from '../libs/interfaces'
+import { ExchangeClass, marketSummary, feeStructure, currencyStructure } from '../libs/interfaces'
 
 
 
@@ -35,14 +35,14 @@ class BitFinex implements ExchangeClass {
 
 
 
-    getMarketData(): Promise<any> {
+    getMarketData( currencies: currencyStructure ): any {
         let options = {
             uri: `${this.baseURL}/tickers`,
             headers: {
                 'User-Agent': 'Request-Promise'
             },
             qs: {
-                symbols: 'tETHUSD'
+                symbols: `t${currencies.base.toUpperCase()}${currencies.against.toUpperCase()}` //tETHUSD'
             },
             json: true // Automatically parses the JSON string in the response
         };
@@ -54,10 +54,10 @@ class BitFinex implements ExchangeClass {
 
 
 
-    getMarketSummary(): Observable<any> {
+    getMarketSummary( currencies: currencyStructure ): Observable<any> {
         return Observable
-            .fromPromise( this.getMarketData() )
-            .map( response => {
+            .fromPromise( this.getMarketData(currencies) )
+            .map( ( response: any ) => {
                 return this.marketSummaryFieldMapping( response[0] )
             })
     }
