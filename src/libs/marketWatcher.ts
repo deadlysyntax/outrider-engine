@@ -4,7 +4,7 @@ import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
 
-import { ExchangeClass, pluginStructure, currencyStructure } from './interfaces'
+import { ExchangeClass, pluginStructure, currencyStructure, reportStructure } from './interfaces'
 
 class MarketWatcher {
 
@@ -13,52 +13,47 @@ class MarketWatcher {
     currencies: currencyStructure
 
 
-    setMarkets( markets: Array<ExchangeClass> ): MarketWatcher {
-        this.markets = markets
-        return this
-    }
 
-
-    setMarketProcessorPlugins( plugins: Array<pluginStructure> ): MarketWatcher {
-        this.plugins = plugins
-        return this
-    }
-
-
-    setCurrencies( currencies: currencyStructure ): MarketWatcher {
+    constructor(  markets: Array<ExchangeClass>, currencies: currencyStructure, plugins: Array<pluginStructure> ){
+        this.markets    = markets
+        this.plugins    = plugins
         this.currencies = currencies
-        return this
     }
 
 
 
-    watch(): void {
-        //console.log('Watching', this.markets )
-        let marketSummaries     = Observable.forkJoin(
-            ...this.markets.map( market => market.getMarketSummary( this.currencies ) )
-        )
-        // Listen for a market summary which gathers market data from all the specified markets (currency exchange)
-        const subscribe = marketSummaries.subscribe(
-            market => {
-                // Each plugin set when this class was instantiated can manipulate this
-                // data object. Data should be namespaced by the plugin so in a way
-                // the data is immutable - data can't be overwritten or removed it can only be added
-                let reportData = this.plugins.reduce( ( report, plugin ) => {
-                    return plugin.method( market, report )
-                }, {
-                    rank:  [],
-                    spread: 0
-                })
 
-                console.log(reportData, 'data')
-            },
-            error => {
-                console.log(error)
-            }
-        )
+    compileReport(): Observable<reportStructure> {
+        return Observable.create( ( observer: Observer<reportStructure> ) => {
+            // Get all the data from all the registered exchanges and combine into
+            // one useful data structure
+            let marketSummaries     = Observable.forkJoin(
+                ...this.markets.map( market => market.getMarketSummary( this.currencies ) )
+            )
+            // We need to pre-process the data into a useful report
+            // Pre-processing plugins are specfied in the
+            marketSummaries.subscribe(
+                market => {
+                    // Each plugin can modify the report object.
+                    // We build this object up, getting and formulating all the
+                    // data needed to make decisions.
+                    let reportData = this.plugins.reduce( ( report, plugin ) => {
+                        return plugin.method( market, report )
+                    }, {
+                        rank:  [],
+                        spread: 0
+                    })
+                    // Send the compiled data back to the watcher
+                    observer.next(reportData)
+                },
+                error => {
+                    observer.error( error )
+                }
+            )
+        })
     }
 }
 
 
 
-export let marketWatcher = new MarketWatcher()
+export default MarketWatcher

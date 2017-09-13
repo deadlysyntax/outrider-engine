@@ -4,7 +4,7 @@ import {independentReserve as IndependentReserve } from './exchanges/independent
 import { bitFinex as BitFinex } from './exchanges/bitfinex'
 //import * as ws from 'ws'
 
-import { marketWatcher as MarketWatcher } from './libs/marketWatcher'
+import MarketWatcher from './libs/marketWatcher'
 
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin'
@@ -20,13 +20,20 @@ dotenv.config()
 
 let run = () => {
 
-    MarketWatcher
-        .setMarkets([ BitFinex, IndependentReserve ])
-        .setCurrencies({ base: 'eth', against: 'usd' })
-        .setMarketProcessorPlugins([
-            buildMarketReport(),
-            calculateSpread()
-        ])
-        .watch()
+
+    let MarketSubscription = new MarketWatcher(
+            [ BitFinex, IndependentReserve ],
+            { base: 'eth', against: 'usd' },
+            [ buildMarketReport(), calculateSpread() ]
+    )
+
+
+    MarketSubscription.compileReport()
+        .subscribe( report => {
+            console.log(report, 'report')
+        })
+
+
+
 }
 run()
