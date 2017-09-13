@@ -18,6 +18,16 @@ let run = () => {
 
     MarketWatcher
         .setMarkets([ BitFinex, IndependentReserve ])
+        .setMarketProcessorPlugins([
+            {
+                name:   'rankLastBids',
+                method: markets => {
+                    let data = markets.map( market => {
+                        console.log(market.lastPrice, market.name)
+                    })
+                }
+            }
+        ])
         .watch()
 }
 run()

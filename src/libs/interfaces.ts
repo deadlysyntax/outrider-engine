@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs/Observable'
 
 export interface marketSummary {
+    name:      string
     dayHigh:   number;
     dayLow:    number;
     lastPrice: number;
@@ -24,10 +25,18 @@ export interface feeStructure {
 
 export interface ExchangeClass {
     baseURL:                                     string;
+    marketName:                                  string;
     feeStructure():                              feeStructure;
     getMarketData():                             Promise<any>;
     getMarketSummary():                          Observable<any>;
     marketSummaryFieldMapping(
         data: Array<any>
     ): marketSummary;
+}
+
+
+
+export interface pluginStructure {
+    name: string;
+    method(): any;
 }

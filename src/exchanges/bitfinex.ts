@@ -11,11 +11,13 @@ import { ExchangeClass, marketSummary, feeStructure } from '../libs/interfaces'
 
 class BitFinex implements ExchangeClass {
 
-    baseURL: string
+    baseURL:    string
+    marketName: string
 
 
     constructor(){
-        this.baseURL = 'https://api.bitfinex.com/v2/'
+        this.baseURL    = 'https://api.bitfinex.com/v2/'
+        this.marketName = 'BitFinex'
     }
 
 
@@ -66,6 +68,7 @@ class BitFinex implements ExchangeClass {
 
     marketSummaryFieldMapping( data: Array<any> ): marketSummary {
         return {
+            name:      this.marketName,
             dayHigh:   data[9],
             dayLow:    data[10],
             lastPrice: data[7],

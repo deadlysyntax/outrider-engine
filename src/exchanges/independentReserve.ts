@@ -10,11 +10,13 @@ import { ExchangeClass, marketSummary, feeStructure } from '../libs/interfaces'
 
 class IndependentReserve implements ExchangeClass {
 
-    baseURL: string
+    baseURL:    string
+    marketName: string
 
 
     constructor(){
-        this.baseURL = 'https://api.independentreserve.com'
+        this.baseURL    = 'https://api.independentreserve.com'
+        this.marketName = 'Independent Reserve'
     }
 
 
@@ -65,6 +67,7 @@ class IndependentReserve implements ExchangeClass {
 
     marketSummaryFieldMapping( data: any ): marketSummary{
         return {
+            name:      this.marketName,
             dayHigh:   data.DayHighestPrice,
             dayLow:    data.DayLowestPrice,
             lastPrice: data.LastPrice,
