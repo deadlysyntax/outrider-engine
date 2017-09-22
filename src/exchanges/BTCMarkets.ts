@@ -8,7 +8,7 @@ import 'rxjs/add/operator/map'
 import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure } from '../libs/interfaces'
 
 
-class IndependentReserve implements ExchangeClass {
+class BTCMarkets implements ExchangeClass {
 
     baseURL:       string
     marketName:    string
@@ -16,24 +16,24 @@ class IndependentReserve implements ExchangeClass {
 
 
     constructor(){
-        this.baseURL    = 'https://api.independentreserve.com'
-        this.marketName = 'Independent Reserve'
+        this.baseURL       = 'https://api.btcmarkets.net'
+        this.marketName    = 'BTC Markets'
         this.currencyCodes = {
-            bitcoin: 'xbt',
-            ether:   'eth',
-            aud:     'aud'
+            bitcoin: 'BTC',
+            ether:   'ETH',
+            aud:     'AUD'
         }
     }
 
-
+//
 
     feeStructure(): feeStructure {
         return {
-            xbtWithdrawl: 0.001,
-            ethWithdrawl: 0.004,
+            xbtWithdrawl: 0.0005,
+            ethWithdrawl: 0.001,
             audWithdrawl: 0,
-            makerFee:     null,
-            takerFee:     null
+            makerFee:     .22,
+            takerFee:     .22
         }
     }
 
@@ -41,13 +41,9 @@ class IndependentReserve implements ExchangeClass {
 
     getMarketData( currencies: currencyStructure ): any {
         let options = {
-            uri: `${this.baseURL}/Public/GetMarketSummary`,
+            uri: `${this.baseURL}/market/${this.currencyCodes[currencies.base]}/${this.currencyCodes[currencies.against]}/tick`,
             headers: {
                 'User-Agent': 'Request-Promise'
-            },
-            qs: {
-                primaryCurrencyCode:   this.currencyCodes[currencies.base],
-                secondaryCurrencyCode: this.currencyCodes[currencies.against]
             },
             json: true // Automatically parses the JSON string in the response
         };
@@ -74,11 +70,11 @@ class IndependentReserve implements ExchangeClass {
     marketSummaryFieldMapping( data: any ): marketSummary{
         return {
             name:      this.marketName,
-            dayHigh:   data.DayHighestPrice,
-            dayLow:    data.DayLowestPrice,
-            lastPrice: data.LastPrice,
-            bidPrice:  data.CurrentHighestBidPrice,
-            askPrice:  data.CurrentLowestOfferPrice,
+            dayHigh:   0,
+            dayLow:    0,
+            lastPrice: data.lastPrice,
+            bidPrice:  data.bestBid,
+            askPrice:  data.bestAsk,
         }
     }
 
@@ -90,4 +86,4 @@ class IndependentReserve implements ExchangeClass {
 }
 
 
-export let independentReserve = new IndependentReserve()
+export let btcMarkets = new BTCMarkets()

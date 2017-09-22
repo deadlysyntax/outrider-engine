@@ -36,7 +36,4 @@ export let calculateSpread = () => {
             return report
         }
     }
-
-
-
 }

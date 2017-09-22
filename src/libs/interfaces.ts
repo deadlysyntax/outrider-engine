@@ -23,9 +23,21 @@ export interface feeStructure {
 
 
 
+export interface currencyCodeStructure {
+    [key:string]: string;
+    bitcoin: string;
+    ether:   string;
+    aud:     string;
+}
+
+
+
+
+
 export interface ExchangeClass {
     baseURL:                          string;
     marketName:                       string;
+    currencyCodes:                    currencyCodeStructure;
     feeStructure():                   feeStructure;
     getMarketData(
         currencies: currencyStructure
@@ -59,11 +71,17 @@ export interface currencyStructure {
 
 
 
+
 export interface marketLastPriceStructure {
     price:  number;
     market: string;
 }
 
+
+export interface opportunityStructure {
+    found: boolean;
+    spread: number;
+}
 
 
 export interface reportStructure {
