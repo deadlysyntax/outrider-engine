@@ -61,7 +61,9 @@ class IndependentReserve implements ExchangeClass {
 
     getMarketSummary( currencies: currencyStructure ): Observable<any> {
         return Observable
-            .fromPromise( this.getMarketData(currencies) )
+            .fromPromise(
+                this.getMarketData(currencies)
+            )
             .map( response => {
                 return this.marketSummaryFieldMapping( response )
             })

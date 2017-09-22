@@ -31,8 +31,9 @@ export let calculateSpread = () => {
         name:   'buildMarketReport',
         method: ( markets: Array<any>, report: reportStructure ) => {
             // calculate simplified version of 'spread' between exchanges
-            // so just calculate the difference in bid price
-            report.spread = ( report.rank[0].price - report.rank[report.rank.length-1].price )
+            // so just calculate the difference in bid price and make it a positive number
+            // This is just so we cant tell if it's worth investigating further
+            report.spread = Math.abs( report.rank[0].price - report.rank[report.rank.length-1].price )
             return report
         }
     }

@@ -4,6 +4,7 @@ import { Observer } from 'rxjs/Observer'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/catch'
 
 import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure } from '../libs/interfaces'
 
@@ -47,7 +48,6 @@ class BTCMarkets implements ExchangeClass {
             },
             json: true // Automatically parses the JSON string in the response
         };
-
         return request(options)
     }
 
@@ -57,7 +57,9 @@ class BTCMarkets implements ExchangeClass {
 
     getMarketSummary( currencies: currencyStructure ): Observable<any> {
         return Observable
-            .fromPromise( this.getMarketData(currencies) )
+            .fromPromise(
+                this.getMarketData(currencies)
+            )
             .map( response => {
                 return this.marketSummaryFieldMapping( response )
             })

@@ -14,7 +14,7 @@ class Arbitrage {
     identifyOpportunity( report: reportStructure ): Observable<any>{
         return Observable.create( ( observer: Observer<opportunityStructure> ) => {
             observer.next({
-                found:  ( Math.abs(report.spread) > 4 ), // Make sure the number is always positive // Get this value from tweakable settings
+                found:  ( report.spread > 4 ), // Make sure the number is always positive // Get this value from tweakable settings
                 spread: report.spread
             })
         })
