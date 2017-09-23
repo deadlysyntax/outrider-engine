@@ -24,7 +24,7 @@ class Arbitrage {
     }
 
 
-    calculate( report: reportStructure ): any {
+    calculate( report: reportStructure ): arbitrageCalculationStructure {
         // We expect the highest bid to be first in the report.rank array
         // and the lowest price to be last
         let buy  = report.rank[report.rank.length-1]
@@ -39,7 +39,7 @@ class Arbitrage {
                 basePrice:     buy.price,
                 feePercent:    fees.tradingFee,
                 feeCalculated: ( (  buy.price / 100 ) * fees.tradingFee ),
-                totalPrice:    ( (  buy.price / 100 ) * fees.tradingFee ) + buy.price )
+                totalPrice:    ( ( (  buy.price / 100 ) * fees.tradingFee ) + buy.price )
             }
         })()
 
@@ -50,17 +50,15 @@ class Arbitrage {
                 basePrice:     sell.price,
                 feePercent:    fees.tradingFee,
                 feeCalculated: ( ( sell.price / 100 ) * fees.tradingFee ),
-                totalPrice:    sell.price - ( ( sell.price / 100 ) * fees.tradingFee ) )
+                totalPrice:    sell.price - ( ( ( sell.price / 100 ) * fees.tradingFee ) )
             }
         })()
-
-        console.log(buyFees, sellFees)
 
         return {
             buy:          buyFees,
             sell:         sellFees,
             profitLoss:   ( buyFees.totalPrice - sellFees.totalPrice ),
-            thresholdMet: ( ( buyFees.totalPrice - sellFees.totalPrice ) > 5 )
+            thresholdMet: ( ( buyFees.totalPrice - sellFees.totalPrice ) > config.profitThreshholdPercent )
         }
 
     }

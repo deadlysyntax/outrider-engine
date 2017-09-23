@@ -8,20 +8,33 @@ export let buildMarketReport = () => {
         method: ( markets: Array<any>, report: reportStructure ) => {
             // Rank the markets and
             report.rank = markets.sort( ( a, b ) => {
-                return parseFloat(a.price) - parseFloat(b.price)
+                //return parseFloat(a.price) - parseFloat(a.price)
+                if (a.price > b.price) {
+                    return 1;
+                }
+
+                if (a.price < b.price) {
+                    return -1;
+                }
+
+                return 0;
             })
+            .reverse()
             .map( market => {
                 return {
                     price:  parseFloat(market.lastPrice),
                     market: market.name
                 }
             })
-            .reverse()
+
+            if( report.rank[0].price <= report.rank[report.rank.length-1].price ){
+                console.log('Issue with ranking')
+            }
+
             return report
         }
     }
 }
-
 
 
 

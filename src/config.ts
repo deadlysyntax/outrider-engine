@@ -1,5 +1,5 @@
 const config = {
-    profitThreshholdPercent: 1
+    profitThreshholdPercent: 10
 }
 
 export default config

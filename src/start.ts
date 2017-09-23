@@ -12,6 +12,8 @@ import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 
+import * as sql from 'sqlite3'
+
 
 // To be plugged in to the watcher
 import { buildMarketReport, calculateSpread, arbitrageIdentifier } from './plugins/buildMarketReport'
@@ -19,6 +21,9 @@ import { buildMarketReport, calculateSpread, arbitrageIdentifier } from './plugi
 
 // Grab configuration
 dotenv.config()
+sql.verbose()
+
+let db = new sql.Database('db/outrider.sqlite', sql.OPEN_READWRITE)
 
 
 let run = () => {
@@ -39,21 +44,15 @@ let run = () => {
     MarketSubscription.compileReport()
         .subscribe( report => {
 
+            if( report.arbitrageCalculations.thresholdMet )
+                db.run(`INSERT INTO arbitrage (data) VALUES ( ? )`, JSON.stringify(report))
+
+
             console.log(report, 'report')
-            //Arbitrage.identifyOpportunity(report)
-            //    .subscribe( opportunity => {
-            //        console.log(opportunity, 'oppor')
 
-            //        if( ! opportunity.found )
-            //            return
-
-                    //console.log('Found an opportunity')
-
-            //    })
         })
-
-
-
-
 }
+// Run initially
 run()
+// And ever ten seconds thereafter
+setInterval(run, 10000)

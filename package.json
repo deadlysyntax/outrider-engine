@@ -28,6 +28,7 @@
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
     "rxjs": "^5.4.3",
+    "sqlite": "^2.8.0",
     "ws": "^3.1.0"
   },
   "devDependencies": {
