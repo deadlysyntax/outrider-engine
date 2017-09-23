@@ -38,8 +38,8 @@ class Arbitrage {
                 exchange:      buy.market,
                 basePrice:     buy.price,
                 feePercent:    fees.tradingFee,
-                feeCalculated: ( (  fees.tradingFee / buy.price ) * 100 ),
-                totalPrice:    ( ( ( fees.tradingFee / buy.price ) * 100 ) + buy.price )
+                feeCalculated: ( (  buy.price / 100 ) * fees.tradingFee ),
+                totalPrice:    ( (  buy.price / 100 ) * fees.tradingFee ) + buy.price )
             }
         })()
 
@@ -49,8 +49,8 @@ class Arbitrage {
                 exchange:      sell.market,
                 basePrice:     sell.price,
                 feePercent:    fees.tradingFee,
-                feeCalculated: ( ( sell.price / fees.tradingFee ) * 100 ),
-                totalPrice:    ( ( ( sell.price / fees.tradingFee ) * 100 ) - sell.price )
+                feeCalculated: ( ( sell.price / 100 ) * fees.tradingFee ),
+                totalPrice:    sell.price - ( ( sell.price / 100 ) * fees.tradingFee ) )
             }
         })()
 
