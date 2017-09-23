@@ -58,7 +58,7 @@ class Arbitrage {
             buy:          buyFees,
             sell:         sellFees,
             profitLoss:   ( buyFees.totalPrice - sellFees.totalPrice ),
-            thresholdMet: ( ( buyFees.totalPrice - sellFees.totalPrice ) > config.profitThreshholdPercent )
+            thresholdMet: ( ( buyFees.totalPrice - sellFees.totalPrice ) > config.profitThreshholdPercent ) // Spread threshhold? negative profit/loss?
         }
 
     }
