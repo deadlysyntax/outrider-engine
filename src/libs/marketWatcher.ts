@@ -41,7 +41,25 @@ class MarketWatcher {
                         return plugin.method( market, report )
                     }, {
                         rank:  [],
-                        spread: 0
+                        spread: 0,
+                        arbitrageCalculations: {
+                            buy:          {
+                                exchange:      {},
+                                basePrice:     0,
+                                feePercent:    0,
+                                feeCalculated: 0,
+                                totalPrice:    0
+                            },
+                            sell:         {
+                                exchange:      {},
+                                basePrice:     0,
+                                feePercent:    0,
+                                feeCalculated: 0,
+                                totalPrice:    0
+                            },
+                            profitLoss:   0,
+                            thresholdMet: false
+                        }
                     })
                     // Send the compiled data back to the watcher
                     observer.next(reportData)

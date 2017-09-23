@@ -18,6 +18,7 @@ export interface feeStructure {
     audWithdrawl: any;
     makerFee:     any;
     takerFee:     any;
+    tradingFee:   any;
 }
 
 
@@ -78,13 +79,27 @@ export interface marketLastPriceStructure {
 }
 
 
-export interface opportunityStructure {
-    found: boolean;
-    spread: number;
+
+export interface tradeCalculationStructure {
+    exchange:      any; // This should become an exchange class
+    basePrice:     number;
+    feePercent:    number;
+    feeCalculated: number;
+    totalPrice:    number;
+}
+
+
+
+export interface arbitrageCalculationStructure {
+    buy:          tradeCalculationStructure;
+    sell:         tradeCalculationStructure;
+    profitLoss:   number;
+    thresholdMet: boolean;
 }
 
 
 export interface reportStructure {
-    rank:   Array<marketLastPriceStructure>;
-    spread: number;
+    rank:                  Array<marketLastPriceStructure>;
+    spread:                number;
+    arbitrageCalculations: arbitrageCalculationStructure;
 }

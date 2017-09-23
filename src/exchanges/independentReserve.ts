@@ -17,7 +17,7 @@ class IndependentReserve implements ExchangeClass {
 
     constructor(){
         this.baseURL    = 'https://api.independentreserve.com'
-        this.marketName = 'Independent Reserve'
+        this.marketName = 'IndependentReserve'
         this.currencyCodes = {
             bitcoin: 'xbt',
             ether:   'eth',
@@ -32,8 +32,9 @@ class IndependentReserve implements ExchangeClass {
             xbtWithdrawl: 0.001,
             ethWithdrawl: 0.004,
             audWithdrawl: 0,
-            makerFee:     null,
-            takerFee:     null
+            makerFee:     .5,
+            takerFee:     .5,
+            tradingFee:   .5
         }
     }
 

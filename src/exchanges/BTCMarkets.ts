@@ -18,7 +18,7 @@ class BTCMarkets implements ExchangeClass {
 
     constructor(){
         this.baseURL       = 'https://api.btcmarkets.net'
-        this.marketName    = 'BTC Markets'
+        this.marketName    = 'BTCMarkets'
         this.currencyCodes = {
             bitcoin: 'BTC',
             ether:   'ETH',
@@ -33,8 +33,9 @@ class BTCMarkets implements ExchangeClass {
             xbtWithdrawl: 0.0005,
             ethWithdrawl: 0.001,
             audWithdrawl: 0,
-            makerFee:     .22,
-            takerFee:     .22
+            makerFee:     .85,
+            takerFee:     .85,
+            tradingFee:   .85
         }
     }
 

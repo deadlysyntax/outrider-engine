@@ -1,4 +1,5 @@
 import { reportStructure } from '../libs/interfaces'
+import { arbitrage as Arbitrage } from '../libs/arbitrage'
 
 
 export let buildMarketReport = () => {
@@ -15,6 +16,7 @@ export let buildMarketReport = () => {
                     market: market.name
                 }
             })
+            .reverse()
             return report
         }
     }
@@ -34,6 +36,23 @@ export let calculateSpread = () => {
             // so just calculate the difference in bid price and make it a positive number
             // This is just so we cant tell if it's worth investigating further
             report.spread = Math.abs( report.rank[0].price - report.rank[report.rank.length-1].price )
+            return report
+        }
+    }
+}
+
+
+
+
+
+
+
+export let arbitrageIdentifier = () => {
+    return {
+        name:   'arbitrageIdentifier',
+        method: ( markets: Array<any>, report: reportStructure ) => {
+            // This will do all our calculations for arbitrage
+            report.arbitrageCalculations = Arbitrage.calculate(report)
             return report
         }
     }

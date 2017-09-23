@@ -6,7 +6,7 @@ import { btcMarkets as BTCMarkets } from './exchanges/BTCMarkets'
 //import * as ws from 'ws'
 
 import MarketWatcher from './libs/marketWatcher'
-import { arbitrage as Arbitrage } from './libs/arbitrage'
+
 
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin'
@@ -14,7 +14,7 @@ import 'rxjs/add/observable/fromPromise'
 
 
 // To be plugged in to the watcher
-import { buildMarketReport, calculateSpread } from './plugins/buildMarketReport'
+import { buildMarketReport, calculateSpread, arbitrageIdentifier } from './plugins/buildMarketReport'
 
 
 // Grab configuration
@@ -32,22 +32,24 @@ let run = () => {
     let MarketSubscription = new MarketWatcher(
             [ BTCMarkets, IndependentReserve ],
             { base: currency[0], against: currency[1] },
-            [ buildMarketReport(), calculateSpread() ]
+            [ buildMarketReport(), calculateSpread(), arbitrageIdentifier() ]
     )
 
 
     MarketSubscription.compileReport()
         .subscribe( report => {
-            Arbitrage.identifyOpportunity(report)
-                .subscribe( opportunity => {
-                    console.log(opportunity, 'oppor')
 
-                    if( ! opportunity.found )
-                        return
+            console.log(report, 'report')
+            //Arbitrage.identifyOpportunity(report)
+            //    .subscribe( opportunity => {
+            //        console.log(opportunity, 'oppor')
+
+            //        if( ! opportunity.found )
+            //            return
 
                     //console.log('Found an opportunity')
 
-                })
+            //    })
         })
 
 
