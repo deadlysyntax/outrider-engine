@@ -13,12 +13,13 @@ export interface marketSummary {
 
 
 export interface feeStructure {
-    xbtWithdrawl: number;
-    ethWithdrawl: number;
-    audWithdrawl: any;
-    makerFee:     any;
-    takerFee:     any;
-    tradingFee:   any;
+    [key:string]:     any;
+    bitcoinWithdrawl: number;
+    etherWithdrawl:   number;
+    audWithdrawl:     any;
+    makerFee:         any;
+    takerFee:         any;
+    tradingFee:       any;
 }
 
 
@@ -26,9 +27,9 @@ export interface feeStructure {
 
 export interface currencyCodeStructure {
     [key:string]: string;
-    bitcoin: string;
-    ether:   string;
-    aud:     string;
+    bitcoin:      string;
+    ether:        string;
+    aud:          string;
 }
 
 
@@ -57,7 +58,8 @@ export interface pluginStructure {
     name: string;
     method(
         market: Array<marketSummary>,
-        report: reportStructure
+        report: reportStructure,
+        currencies: currencyStructure
     ): any;
 }
 
@@ -90,9 +92,17 @@ export interface tradeCalculationStructure {
 
 
 
+export interface rebaseFeeStructure {
+    cryptoFee:        number;
+    convertedFiatFee: number;
+}
+
+
+
 export interface arbitrageCalculationStructure {
     buy:          tradeCalculationStructure;
     sell:         tradeCalculationStructure;
+    rebaseFee:    rebaseFeeStructure;
     profitLoss:   number;
     thresholdMet: boolean;
 }
@@ -101,5 +111,6 @@ export interface arbitrageCalculationStructure {
 export interface reportStructure {
     rank:                  Array<marketLastPriceStructure>;
     spread:                number;
+    currencies:            currencyStructure;
     arbitrageCalculations: arbitrageCalculationStructure;
 }

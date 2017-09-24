@@ -30,12 +30,12 @@ class BTCMarkets implements ExchangeClass {
 
     feeStructure(): feeStructure {
         return {
-            xbtWithdrawl: 0.0005,
-            ethWithdrawl: 0.001,
-            audWithdrawl: 0,
-            makerFee:     .85,
-            takerFee:     .85,
-            tradingFee:   .85
+            bitcoinWithdrawl: 0.0005, // bitcoin
+            etherWithdrawl:   0.001,  // bitcoin
+            audWithdrawl:     0,
+            makerFee:        .85,// percent
+            takerFee:        .85,// percenct
+            tradingFee:      .85 // percent
         }
     }
 

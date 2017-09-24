@@ -30,6 +30,7 @@ class MarketWatcher {
             let marketSummaries     = Observable.forkJoin(
                 ...this.markets.map( market => market.getMarketSummary( this.currencies ) )
             )
+            let currencies = this.currencies
             // We need to pre-process the data into a useful report
             // Pre-processing plugins are specfied in the
             marketSummaries.subscribe(
@@ -38,10 +39,14 @@ class MarketWatcher {
                     // We build this object up, getting and formulating all the
                     // data needed to make decisions.
                     let reportData = this.plugins.reduce( ( report, plugin ) => {
-                        return plugin.method( market, report )
+                        return plugin.method( market, report, currencies )
                     }, {
                         rank:  [],
                         spread: 0,
+                        currencies: {
+                            base:   '',
+                            against: ''
+                        },
                         arbitrageCalculations: {
                             buy:          {
                                 exchange:      {},
@@ -56,6 +61,10 @@ class MarketWatcher {
                                 feePercent:    0,
                                 feeCalculated: 0,
                                 totalPrice:    0
+                            },
+                            rebaseFee:    {
+                                cryptoFee:        0,
+                                convertedFiatFee: 0
                             },
                             profitLoss:   0,
                             thresholdMet: false

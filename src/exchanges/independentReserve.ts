@@ -29,12 +29,12 @@ class IndependentReserve implements ExchangeClass {
 
     feeStructure(): feeStructure {
         return {
-            xbtWithdrawl: 0.001,
-            ethWithdrawl: 0.004,
-            audWithdrawl: 0,
-            makerFee:     .5,
-            takerFee:     .5,
-            tradingFee:   .5
+            bitcoinWithdrawl: 0.001, // bitcoin
+            etherWithdrawl:   0.004, // bitcoin
+            audWithdrawl:     0,     //
+            makerFee:         .5,    // percent usd
+            takerFee:         .5,    // percent usd
+            tradingFee:       .5     // percent usd
         }
     }
 

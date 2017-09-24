@@ -50,17 +50,34 @@ class Arbitrage {
                 basePrice:     sell.price,
                 feePercent:    fees.tradingFee,
                 feeCalculated: ( ( sell.price / 100 ) * fees.tradingFee ),
-                totalPrice:    sell.price - ( ( ( sell.price / 100 ) * fees.tradingFee ) )
+                totalPrice:    ( sell.price - ( ( ( sell.price / 100 ) * fees.tradingFee ) ) )
             }
         })()
 
-        return {
-            buy:          buyFees,
-            sell:         sellFees,
-            profitLoss:   ( sellFees.totalPrice - buyFees.totalPrice ),
-            thresholdMet: ( ( buyFees.totalPrice - sellFees.totalPrice ) > config.profitThreshholdPercent ) // Spread threshhold? negative profit/loss?
+        let arbitrageReport = {
+            buy:         buyFees,
+            sell:        sellFees,
+            rebaseFee:   {
+                cryptoFee:        (() => {
+                    let fees = this.exchanges[buy.market].feeStructure()
+                    // Fee to transfer the purchased coin from the buying to the selling exchange in bitcoin
+                    return fees[report.currencies.base+'Withdrawl']
+                })(),
+                convertedFiatFee: (() => {
+                    let fees = this.exchanges[buy.market].feeStructure()
+                    // Fee to transfer the purchased coin from the buying to the selling exchange in in dollars
+                    let withdrawlFee = fees[report.currencies.base+'Withdrawl']
+                    // Convert coin into 'against' currency
+                    return ( buy.price * withdrawlFee )
+                })()
+            },
+            profitLoss:   0,
+            thresholdMet: false
         }
-
+        // We need the fees calculated above so we need to reference it out here
+        arbitrageReport.profitLoss   = ( sellFees.totalPrice - buyFees.totalPrice - arbitrageReport.rebaseFee.convertedFiatFee )
+        arbitrageReport.thresholdMet = ( arbitrageReport.profitLoss > config.profitThreshold )
+        return arbitrageReport
     }
 
 }
