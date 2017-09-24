@@ -19,7 +19,6 @@ export let buildMarketReport = () => {
 
                 return 0;
             })
-            .reverse()
             .map( market => {
                 return {
                     price:  parseFloat(market.lastPrice),
@@ -27,9 +26,9 @@ export let buildMarketReport = () => {
                 }
             })
 
-            if( report.rank[0].price <= report.rank[report.rank.length-1].price ){
-                console.log('Issue with ranking')
-            }
+
+            if( report.rank[0].price < report.rank[report.rank.length-1].price)
+                report.rank.reverse()
 
             return report
         }
