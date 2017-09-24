@@ -100,11 +100,12 @@ export interface rebaseFeeStructure {
 
 
 export interface arbitrageCalculationStructure {
-    buy:          tradeCalculationStructure;
-    sell:         tradeCalculationStructure;
-    rebaseFee:    rebaseFeeStructure;
-    profitLoss:   number;
-    thresholdMet: boolean;
+    buy:               tradeCalculationStructure;
+    sell:              tradeCalculationStructure;
+    rebaseFee:         rebaseFeeStructure;
+    profitLoss:        number;
+    profitLossPercent: number;
+    thresholdMet:      boolean;
 }
 
 

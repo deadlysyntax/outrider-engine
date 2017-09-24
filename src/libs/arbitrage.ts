@@ -61,8 +61,9 @@ class Arbitrage {
                 cryptoFee:        0,
                 convertedFiatFee: 0
             },
-            profitLoss:   0,
-            thresholdMet: false
+            profitLoss:        0,
+            profitLossPercent: 0,
+            thresholdMet:      false
         }
         // We need the fees calculated above so we need to reference it out here
         arbitrageReport.rebaseFee.cryptoFee = (() => {
@@ -74,8 +75,9 @@ class Arbitrage {
             // Convert coin into 'against' currency
             return ( buy.price * arbitrageReport.rebaseFee.cryptoFee )
         })()
-        arbitrageReport.profitLoss   = ( sellFees.totalPrice - buyFees.totalPrice - arbitrageReport.rebaseFee.convertedFiatFee )
-        arbitrageReport.thresholdMet = ( arbitrageReport.profitLoss > config.profitThreshold )
+        arbitrageReport.profitLoss        = ( sellFees.totalPrice - buyFees.totalPrice - arbitrageReport.rebaseFee.convertedFiatFee )
+        arbitrageReport.thresholdMet      = ( arbitrageReport.profitLoss > config.profitThreshold )
+        arbitrageReport.profitLossPercent = ( ( arbitrageReport.profitLoss / buy.price ) * 100 )
         return arbitrageReport
     }
 

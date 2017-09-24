@@ -59,3 +59,6 @@ typings/
 
 # remove the compiled app
 dist
+
+# Database
+# db/outrider.sqlite

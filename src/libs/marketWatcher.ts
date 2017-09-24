@@ -66,8 +66,9 @@ class MarketWatcher {
                                 cryptoFee:        0,
                                 convertedFiatFee: 0
                             },
-                            profitLoss:   0,
-                            thresholdMet: false
+                            profitLoss:        0,
+                            profitLossPercent: 0,
+                            thresholdMet:      false
                         }
                     })
                     // Send the compiled data back to the watcher
