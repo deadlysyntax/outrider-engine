@@ -60,5 +60,7 @@ typings/
 # remove the compiled app
 dist
 
+.DS_Store
+
 # Database
 # db/outrider.sqlite
