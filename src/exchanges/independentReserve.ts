@@ -27,6 +27,7 @@ class IndependentReserve implements ExchangeClass {
 
 
 
+
     feeStructure(): feeStructure {
         return {
             bitcoinWithdrawl: 0.001, // bitcoin

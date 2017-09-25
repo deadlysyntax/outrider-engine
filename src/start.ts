@@ -15,6 +15,7 @@ import 'rxjs/add/observable/fromPromise'
 import * as sql from 'sqlite3'
 
 
+
 // To be plugged in to the watcher
 import { buildMarketReport, calculateSpread, arbitrageIdentifier } from './plugins/buildMarketReport'
 

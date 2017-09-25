@@ -8,16 +8,18 @@
         "outDir": "dist",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "allowSyntheticDefaultImports": true,
         "baseUrl": ".",
         "paths": {
             "*": [
                 "node_modules/*",
                 "types/*",
-                "db/*"
+                "db/*",
             ]
         }
     },
     "include": [
-        "src/*"
+        "src/*",
+        "src/**/*"
     ],
 }
