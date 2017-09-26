@@ -20,7 +20,7 @@ app.get('/arbitrage/data', (req: any, res: any) => {
     //
     res.setHeader('Content-Type', 'application/json')
     //
-    db.all(`SELECT * FROM arbitrage ORDER BY timestamp DESC LIMIT 100`, (error: any, results: any) => {
+    db.all(`SELECT * FROM arbitrage ORDER BY timestamp ASC LIMIT 1000`, (error: any, results: any) => {
         // Scoot if theres an error
         if( error )
             res.send(JSON.stringify('Error'))
@@ -34,9 +34,7 @@ app.get('/arbitrage/data', (req: any, res: any) => {
 
 
 
-
-
 // Start Serve
 app.listen(9999, () => {
-    console.log('Example app listening on port 6666')
+    console.log('Example app listening on port 9999')
 })
