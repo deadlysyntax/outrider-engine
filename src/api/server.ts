@@ -2,6 +2,7 @@ import * as express  from 'express'
 import * as sql from 'sqlite3'
 import * as path from 'path'
 import * as cors from 'cors'
+import * as moment from 'moment'
 
 sql.verbose()
 
@@ -20,16 +21,67 @@ app.get('/arbitrage/data', (req: any, res: any) => {
     //
     res.setHeader('Content-Type', 'application/json')
     //
-    db.all(`SELECT * FROM arbitrage ORDER BY timestamp ASC LIMIT 1000`, (error: any, results: any) => {
+    db.all(`SELECT * FROM arbitrage ORDER BY timestamp DESC LIMIT 100000`, (error: any, results: any) => {
         // Scoot if theres an error
         if( error )
             res.send(JSON.stringify('Error'))
+
+        // Group the calls by hour and calculate the average
+        res.send(JSON.stringify(processArbitrageData(results)))
+    })
+})
+
+
+app.get('/arbitrage/latest', (req: any, res: any) => {
+    //
+    res.setHeader('Content-Type', 'application/json')
+    //
+    db.all(`SELECT * FROM arbitrage ORDER BY timestamp DESC LIMIT 1`, (error: any, results: any) => {
+        // Scoot if theres an error
+        if( error )
+            res.send(JSON.stringify('Error'))
+
         // Group the calls by hour and calculate the average
         res.send(JSON.stringify(results))
     })
-
-
 })
+
+
+
+
+
+
+
+
+// Format the data in how we want our chart to recieve it
+let processArbitrageData = (data: any) => {
+  let processedData = []
+  //
+  let compiledData = data.reduce( ( result: any, opportunity: any ) => {
+    // Convert the data into js
+    let data = JSON.parse(opportunity.data)
+    // We use the date/time as our label
+    let time = moment(opportunity.timestamp, 'YYYY-MM-DD H:m:s').format('YYYY-MM-DD HH')
+    // Create a fresh one other wise we're manipulating the previous iteration of the reducer
+    if ( ! result[time] ) result[time] = { time, high: data.arbitrageCalculations.profitLoss, low: data.arbitrageCalculations.profitLoss}  // Create new group, start the low at the first point
+    // Add the high for this time span
+    if( data.arbitrageCalculations.profitLoss > result[time].high )
+      result[time].high = data.arbitrageCalculations.profitLoss
+
+
+    if( data.arbitrageCalculations.profitLoss < result[time].low )
+      result[time].low = data.arbitrageCalculations.profitLoss
+
+
+    return result
+  }, {} )
+  //
+  for( let key in compiledData )
+    processedData.push(compiledData[key])
+  //
+  return processedData
+
+}
 
 
 

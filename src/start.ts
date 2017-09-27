@@ -44,7 +44,7 @@ let run = () => {
     MarketSubscription.compileReport()
         .subscribe( report => {
             // Save viable trades to the database to monitor
-            if( report.arbitrageCalculations.thresholdMet )
+            //if( report.arbitrageCalculations.thresholdMet )
                 db.run(`INSERT INTO arbitrage (data) VALUES ( ? )`, JSON.stringify(report))
             //
             console.log(report, 'report')
