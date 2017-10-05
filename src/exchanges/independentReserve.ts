@@ -4,6 +4,7 @@ import { Observer } from 'rxjs/Observer'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/catch'
 
 import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure } from '../libs/interfaces'
 

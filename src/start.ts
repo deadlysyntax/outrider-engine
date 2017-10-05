@@ -11,7 +11,7 @@ import MarketWatcher from './libs/marketWatcher'
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
-
+import 'rxjs/add/operator/catch'
 import * as sql from 'sqlite3'
 
 
@@ -49,6 +49,7 @@ let run = () => {
             //
             console.log(report, 'report')
         })
+
 }
 // Run initially
 run()
