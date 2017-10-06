@@ -87,7 +87,7 @@ app.post('/arbitrage/hourly', (req: any, res: any) => {
             res.send(JSON.stringify('Error'))
 
         // Group the calls by hour and calculate the average
-        res.send(JSON.stringify(results))
+        res.send(JSON.stringify(processHourlyArbitrageData(results)))
     })
 })
 
@@ -119,6 +119,40 @@ let processArbitrageData = (dataSet: any) => {
 
     if( data.arbitrageCalculations.profitLoss < result[time].low )
       result[time].low = data.arbitrageCalculations.profitLoss
+
+    return result
+  }, {} )
+  //
+  for( let key in compiledData )
+    processedData.push(compiledData[key])
+  //
+  return processedData
+
+}
+
+
+
+
+//
+//
+//
+// Format the data in how we want our chart to recieve it
+let processHourlyArbitrageData = (dataSet: any) => {
+  let processedData = []
+
+  if( typeof dataSet === 'undefined' || dataSet === null )
+    return []
+  //
+  let compiledData = dataSet.reduce( ( result: any, opportunity: any ) => {
+    // Convert the data into js
+    let data = JSON.parse(opportunity.data)
+    // We use the date/time as our label
+    let time = opportunity.timestamp //moment(opportunity.timestamp, 'YYYY-MM-DD H:mm:ss').tz('Australia/Sydney').format('YYYY-MM-DD HH')
+
+
+    if ( ! result[time] ) result[time] = { time, data: [] }
+
+    result[time].data.push(data)
 
     return result
   }, {} )
