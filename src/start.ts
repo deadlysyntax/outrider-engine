@@ -68,6 +68,7 @@ setInterval(run, 10000)
 // Initializes and runs our trading system
 let runTrader = ( report: reportStructure ) => {
     let trade = new Trader(report)
+        .initialize()
         .subscribe(
             ( response: any ) => {
                 console.log(response, 'trade next response')

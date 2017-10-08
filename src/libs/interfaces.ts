@@ -35,7 +35,6 @@ export interface currencyCodeStructure {
 
 
 
-
 export interface ExchangeClass {
     baseURL:                          string;
     marketName:                       string;

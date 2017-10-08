@@ -6,6 +6,8 @@ import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/catch'
 
+import sha256, { Hash, HMAC } from "fast-sha256"
+
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -73,21 +75,35 @@ class IndependentReserve implements ExchangeClass {
     //
     //
     getAccountData( ): Observable<any> {
+        // Use timestamp as iterating nonce
+        let url       = `${this.baseURL}/Private/GetAccounts`
+        let nonce     = Math.floor(Date.now() / 1000)
+        let body      = [
+            `apiKey=${this.apiKey}`,
+            `nonce=${nonce}`
+        ]
+        let message   = `${url} ${body.join(',')}`
+        const h = new HMAC(key); // also Hash and HMAC classes
+        const mac = h.update(data).digest();
+        let signature = crypto.mac('hmac', 'sha256', '', {}).update(`${message}`).finalize().stringify('hex')
+        // Set options
         let options = {
-            method: 'POST',
-            uri: `${this.baseURL}/account/balance`,
+            method:  'POST',
+            uri:     url,
             headers: {
-                User-Agent: 'Request-Promise',
+                'User-Agent': 'Request-Promise',
             },
             body: {
-                apiKey:   "{api-key}",
-                nonce:     {nonce},
-                signature: "{signature}",
-            }
+                apiKey:    this.apiKey,
+                nonce:     nonce,
+                signature: signature,
+            },
             json: true // Automatically parses the JSON string in the response
         };
         return Observable.fromPromise(request(options))
     }
+
+
 
 
 

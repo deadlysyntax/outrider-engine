@@ -1,4 +1,4 @@
-import { reportStructure } from './interfaces'
+import { reportStructure, ExchangeClass } from './interfaces'
 
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin'
@@ -7,26 +7,41 @@ import 'rxjs/add/operator/catch'
 import * as sql from 'sqlite3'
 
 
-
+import {independentReserve as IndependentReserve } from '../exchanges/independentReserve'
+import { btcMarkets as BTCMarkets } from '../exchanges/BTCMarkets'
 
 
 class Trader {
 
     report: reportStructure
     toTrade: boolean
+    markets: any
 
     constructor( report: reportStructure ) {
         this.report  = report
+        this.markets = {
+            BTCMarkets,
+            IndependentReserve
+        }
         this.toTrade = this.tradeDecision()
         console.log('Initiatng Arbitrage Trade')
+        return this
+    }
+
+
+
+
+
+    initialize(): Observable<any> {
         return Observable.create( ( observer: any ) => {
             if( this.toTrade !== true )
                 observer.error('Decided to not trade')
             // Place trade orders
             observer.complete()
         })
-
     }
+
+
 
 
 
@@ -36,6 +51,15 @@ class Trader {
         let buy  = this.report.arbitrageCalculations.buy
         let sell = this.report.arbitrageCalculations.sell
 
+        //console.log(this.markets[buy.exchange].getAccountData())
+
+
+        //.getAccountData().subscribe( ( response: any ) => {
+        //    console.log(response, 'BUY')
+        //})
+        //this.markets[sell.exchange].getAccountData().subscribe( ( response: any ) => {
+        //    console.log(response, 'SELL')
+        //})
 
         // Get wallet amount at each exchange
 

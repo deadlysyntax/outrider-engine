@@ -6,6 +6,8 @@ import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/catch'
 
+import sha256, { Hash, HMAC } from "fast-sha256"
+
 import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure } from '../libs/interfaces'
 
 import * as dotenv from 'dotenv'
@@ -68,14 +70,20 @@ class BTCMarkets implements ExchangeClass {
     //
     //
     getAccountData( ): Observable<any> {
+        // Need this for signature
+        let url       = '/account/balance'
+        let nonce     = Math.floor(Date.now() / 1000) // Use timestamp as iterating nonce
+        let body      = {}
+        let signature = crypto.mac('hmac', 'sha256', '', {}).update(`${url} \n ${nonce} \n ${JSON.stringify(body)}`).finalize().stringify('hex')
+        //
         let options = {
-            method: 'POST',
-            uri: `${this.baseURL}/Private/GetAccounts`,
+            method: 'GET',
+            uri: `${this.baseURL}${url}`,
             headers: {
-                User-Agent: 'Request-Promise',
-                apikey:     "your API key",
-                timestamp:  "timestamp used in above process to create the signature",
-                signature:  ""
+                'User-Agent': 'Request-Promise',
+                'apikey':     this.apiKey,
+                'timestamp':  nonce,
+                'signature':  signature
             },
             json: true // Automatically parses the JSON string in the response
         };
@@ -113,7 +121,7 @@ class BTCMarkets implements ExchangeClass {
     }
 
 
-    create
+
 
 
 
