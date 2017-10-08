@@ -8,12 +8,15 @@ import 'rxjs/add/operator/catch'
 
 import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure } from '../libs/interfaces'
 
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 class BTCMarkets implements ExchangeClass {
 
     baseURL:       string
     marketName:    string
     currencyCodes: currencyCodeStructure
+    apiKey:        string
 
 
     constructor(){
@@ -24,6 +27,7 @@ class BTCMarkets implements ExchangeClass {
             ether:   'ETH',
             aud:     'AUD'
         }
+        this.apiKey = process.env.BTC_MARKETS_API_KEY
     }
 
 //
@@ -41,6 +45,9 @@ class BTCMarkets implements ExchangeClass {
 
 
 
+    //
+    //
+    //
     getMarketData( currencies: currencyStructure ): any {
         let options = {
             uri: `${this.baseURL}/market/${this.currencyCodes[currencies.base]}/${this.currencyCodes[currencies.against]}/tick`,
@@ -51,6 +58,30 @@ class BTCMarkets implements ExchangeClass {
         };
         return request(options)
     }
+
+
+
+
+
+
+    //
+    //
+    //
+    getAccountData( ): Observable<any> {
+        let options = {
+            method: 'POST',
+            uri: `${this.baseURL}/Private/GetAccounts`,
+            headers: {
+                User-Agent: 'Request-Promise',
+                apikey:     "your API key",
+                timestamp:  "timestamp used in above process to create the signature",
+                signature:  ""
+            },
+            json: true // Automatically parses the JSON string in the response
+        };
+        return Observable.fromPromise(request(options))
+    }
+
 
 
 
@@ -82,6 +113,7 @@ class BTCMarkets implements ExchangeClass {
     }
 
 
+    create
 
 
 

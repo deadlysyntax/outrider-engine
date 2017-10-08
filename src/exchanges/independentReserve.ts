@@ -6,6 +6,9 @@ import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/catch'
 
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure } from '../libs/interfaces'
 
 
@@ -14,6 +17,7 @@ class IndependentReserve implements ExchangeClass {
     baseURL:       string
     marketName:    string
     currencyCodes: currencyCodeStructure
+    apiKey:        string
 
 
     constructor(){
@@ -24,6 +28,7 @@ class IndependentReserve implements ExchangeClass {
             ether:   'eth',
             aud:     'aud'
         }
+        this.apiKey = process.env.INDEPENDENT_RESERVE_API_KEY
     }
 
 
@@ -41,7 +46,9 @@ class IndependentReserve implements ExchangeClass {
     }
 
 
-
+    //
+    //
+    //
     getMarketData( currencies: currencyStructure ): any {
         let options = {
             uri: `${this.baseURL}/Public/GetMarketSummary`,
@@ -62,6 +69,32 @@ class IndependentReserve implements ExchangeClass {
 
 
 
+    //
+    //
+    //
+    getAccountData( ): Observable<any> {
+        let options = {
+            method: 'POST',
+            uri: `${this.baseURL}/account/balance`,
+            headers: {
+                User-Agent: 'Request-Promise',
+            },
+            body: {
+                apiKey:   "{api-key}",
+                nonce:     {nonce},
+                signature: "{signature}",
+            }
+            json: true // Automatically parses the JSON string in the response
+        };
+        return Observable.fromPromise(request(options))
+    }
+
+
+
+
+    //
+    //
+    //
     getMarketSummary( currencies: currencyStructure ): Observable<any> {
         return Observable
             .fromPromise(

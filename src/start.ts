@@ -4,8 +4,10 @@ import { btcMarkets as BTCMarkets } from './exchanges/BTCMarkets'
 //import { ACX } from './exchanges/acx'
 //import { bitFinex as BitFinex } from './exchanges/bitfinex'
 //import * as ws from 'ws'
+import { reportStructure } from './libs/interfaces'
 
 import MarketWatcher from './libs/marketWatcher'
+import Trader from './libs/trader'
 
 
 import { Observable } from 'rxjs/Observable'
@@ -21,7 +23,6 @@ import { buildMarketReport, calculateSpread, arbitrageIdentifier } from './plugi
 
 
 // Grab configuration
-dotenv.config()
 sql.verbose()
 
 let db = new sql.Database('db/outrider.sqlite', sql.OPEN_READWRITE)
@@ -43,11 +44,13 @@ let run = () => {
 
     MarketSubscription.compileReport()
         .subscribe( report => {
+            console.log('Report Produced')
+            console.log('Trade Threshhold Met: %s', report.arbitrageCalculations.thresholdMet)
             // Save viable trades to the database to monitor
-            //if( report.arbitrageCalculations.thresholdMet )
-                db.run(`INSERT INTO arbitrage (data) VALUES ( ? )`, JSON.stringify(report))
-            //
-            console.log(report, 'report')
+            db.run(`INSERT INTO arbitrage (data) VALUES ( ? )`, JSON.stringify(report))
+            // Check if we're live trading
+            if( typeof  process.argv[3] !== 'undefined' && process.argv[3] === 'trade')
+                runTrader(report)
         })
 
 }
@@ -55,3 +58,25 @@ let run = () => {
 run()
 // And ever ten seconds thereafter
 setInterval(run, 10000)
+
+
+
+
+
+
+
+// Initializes and runs our trading system
+let runTrader = ( report: reportStructure ) => {
+    let trade = new Trader(report)
+        .subscribe(
+            ( response: any ) => {
+                console.log(response, 'trade next response')
+            },
+            ( error: any ) => {
+                console.log(error, 'trade error')
+            },
+            () => {
+                console.log('Trade Complete')
+            }
+        )
+}

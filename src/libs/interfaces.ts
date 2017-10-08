@@ -40,10 +40,12 @@ export interface ExchangeClass {
     baseURL:                          string;
     marketName:                       string;
     currencyCodes:                    currencyCodeStructure;
+    apiKey:                           string;
     feeStructure():                   feeStructure;
     getMarketData(
         currencies: currencyStructure
     ): Promise<any>;
+    getAccountData(): Observable<any>;
     getMarketSummary(
         currencies: currencyStructure
     ):  Observable<any>;
