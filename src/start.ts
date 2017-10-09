@@ -43,7 +43,7 @@ let run = () => {
 
 
     MarketSubscription.compileReport()
-        .subscribe( report => {
+        .subscribe( ( report: reportStructure ) => {
             console.log('Report Produced')
             console.log('Trade Threshhold Met: %s', report.arbitrageCalculations.thresholdMet)
             // Save viable trades to the database to monitor
@@ -51,6 +51,9 @@ let run = () => {
             // Check if we're live trading
             if( typeof  process.argv[3] !== 'undefined' && process.argv[3] === 'trade')
                 runTrader(report)
+        },
+        ( error: any ) => {
+            console.log(error)
         })
 
 }

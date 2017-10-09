@@ -5,8 +5,7 @@ import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/catch'
-
-import sha256, { Hash, HMAC } from "fast-sha256"
+import * as crypto from 'crypto'
 
 import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure } from '../libs/interfaces'
 
@@ -19,6 +18,7 @@ class BTCMarkets implements ExchangeClass {
     marketName:    string
     currencyCodes: currencyCodeStructure
     apiKey:        string
+    apiSecret:     string
 
 
     constructor(){
@@ -29,7 +29,8 @@ class BTCMarkets implements ExchangeClass {
             ether:   'ETH',
             aud:     'AUD'
         }
-        this.apiKey = process.env.BTC_MARKETS_API_KEY
+        this.apiKey    = process.env.BTC_MARKETS_API_KEY
+        this.apiSecret = process.env.BTC_MARKETS_SECRET
     }
 
 //
@@ -57,7 +58,7 @@ class BTCMarkets implements ExchangeClass {
                 'User-Agent': 'Request-Promise'
             },
             json: true // Automatically parses the JSON string in the response
-        };
+        }
         return request(options)
     }
 
@@ -72,21 +73,28 @@ class BTCMarkets implements ExchangeClass {
     getAccountData( ): Observable<any> {
         // Need this for signature
         let url       = '/account/balance'
-        let nonce     = Math.floor(Date.now() / 1000) // Use timestamp as iterating nonce
-        let body      = {}
-        let signature = crypto.mac('hmac', 'sha256', '', {}).update(`${url} \n ${nonce} \n ${JSON.stringify(body)}`).finalize().stringify('hex')
+        let nonce     = (new Date()).getTime() // Use timestamp as iterating nonce
+
+
+        let signature = crypto.createHmac('sha512', new Buffer(this.apiSecret, 'base64'))
+                           .update(`${url}\n${nonce}\n`)
+                           .digest('base64')
+        console.log(signature)
         //
         let options = {
             method: 'GET',
             uri: `${this.baseURL}${url}`,
             headers: {
-                'User-Agent': 'Request-Promise',
-                'apikey':     this.apiKey,
-                'timestamp':  nonce,
-                'signature':  signature
+                //"Accept":         "application/json",
+                //"Accept-Charset": "UTF-8",
+                //"Content-Type":   "application/json",
+                'User-Agent':     'Outrider',
+                'apikey':         this.apiKey,
+                'timestamp':      nonce,
+                'signature':      signature
             },
             json: true // Automatically parses the JSON string in the response
-        };
+        }
         return Observable.fromPromise(request(options))
     }
 

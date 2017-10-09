@@ -50,16 +50,22 @@ class Trader {
 
         let buy  = this.report.arbitrageCalculations.buy
         let sell = this.report.arbitrageCalculations.sell
+        //
+        let buyTransaction = this.markets[buy.exchange].getAccountData()
+        .subscribe( ( response: any ) => {
+            console.log(response, 'BUY: '+ buy.exchange)
+        },
+        ( error: any ) => {
+            console.log(error)
+        })
 
-        //console.log(this.markets[buy.exchange].getAccountData())
-
-
-        //.getAccountData().subscribe( ( response: any ) => {
-        //    console.log(response, 'BUY')
-        //})
-        //this.markets[sell.exchange].getAccountData().subscribe( ( response: any ) => {
-        //    console.log(response, 'SELL')
-        //})
+        let sellTransaction = this.markets[sell.exchange].getAccountData()
+        .subscribe( ( response: any ) => {
+            console.log(response, 'SELL: '+sell.exchange )
+        },
+        ( error: any ) => {
+            console.log(error)
+        })
 
         // Get wallet amount at each exchange
 

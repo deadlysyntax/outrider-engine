@@ -5,8 +5,7 @@ import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/catch'
-
-import sha256, { Hash, HMAC } from "fast-sha256"
+import * as crypto from 'crypto'
 
 import * as dotenv from 'dotenv'
 dotenv.config()
@@ -20,7 +19,7 @@ class IndependentReserve implements ExchangeClass {
     marketName:    string
     currencyCodes: currencyCodeStructure
     apiKey:        string
-
+    apiSecret:     string
 
     constructor(){
         this.baseURL    = 'https://api.independentreserve.com'
@@ -30,7 +29,8 @@ class IndependentReserve implements ExchangeClass {
             ether:   'eth',
             aud:     'aud'
         }
-        this.apiKey = process.env.INDEPENDENT_RESERVE_API_KEY
+        this.apiKey    = process.env.INDEPENDENT_RESERVE_API_KEY
+        this.apiSecret = process.env.INDEPENDENT_RESERVE_SECRET
     }
 
 
@@ -77,15 +77,18 @@ class IndependentReserve implements ExchangeClass {
     getAccountData( ): Observable<any> {
         // Use timestamp as iterating nonce
         let url       = `${this.baseURL}/Private/GetAccounts`
-        let nonce     = Math.floor(Date.now() / 1000)
+        let nonce     = Date.now()
         let body      = [
-            `apiKey=${this.apiKey}`,
-            `nonce=${nonce}`
+            url,
+            'apiKey='+this.apiKey,
+            'nonce='+nonce
         ]
-        let message   = `${url} ${body.join(',')}`
-        const h = new HMAC(key); // also Hash and HMAC classes
-        const mac = h.update(data).digest();
-        let signature = crypto.mac('hmac', 'sha256', '', {}).update(`${message}`).finalize().stringify('hex')
+        let message   = `${body.join(',')}`
+
+        const signature = crypto.createHmac('sha256', new Buffer(this.apiSecret, 'utf8'))
+                   .update(message)
+                   .digest('hex').toUpperCase()
+
         // Set options
         let options = {
             method:  'POST',

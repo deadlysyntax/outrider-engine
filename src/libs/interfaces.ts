@@ -40,6 +40,7 @@ export interface ExchangeClass {
     marketName:                       string;
     currencyCodes:                    currencyCodeStructure;
     apiKey:                           string;
+    apiSecret:                        string;
     feeStructure():                   feeStructure;
     getMarketData(
         currencies: currencyStructure
