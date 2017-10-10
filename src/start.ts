@@ -25,7 +25,9 @@ import { buildMarketReport, calculateSpread, arbitrageIdentifier } from './plugi
 // Grab configuration
 sql.verbose()
 
+
 let db = new sql.Database('db/outrider.sqlite', sql.OPEN_READWRITE)
+
 
 
 let run = () => {
@@ -45,9 +47,15 @@ let run = () => {
     MarketSubscription.compileReport()
         .subscribe( ( report: reportStructure ) => {
             console.log('Report Produced')
-            console.log('Trade Threshhold Met: %s', report.arbitrageCalculations.thresholdMet)
+            console.log('Trade Threshhold Met:', report)
             // Save viable trades to the database to monitor
-            db.run(`INSERT INTO arbitrage (data) VALUES ( ? )`, JSON.stringify(report))
+            try{
+                db.run(`INSERT INTO arbitrage (data) VALUES ( ? )`, JSON.stringify(report))
+            }
+            catch(e) {
+                console.log('Error connecting to db')
+            }
+
             // Check if we're live trading
             if( typeof  process.argv[3] !== 'undefined' && process.argv[3] === 'trade')
                 runTrader(report)
@@ -55,7 +63,6 @@ let run = () => {
         ( error: any ) => {
             console.log(error)
         })
-
 }
 // Run initially
 run()

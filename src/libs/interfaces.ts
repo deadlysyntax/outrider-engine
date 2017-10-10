@@ -35,6 +35,22 @@ export interface currencyCodeStructure {
 
 
 
+export interface exchangeBalanceSummary {
+    buy:  exchangeBalanceStructure;
+    sell: exchangeBalanceStructure;
+}
+
+
+export interface exchangeBalanceStructure {
+    marketName: string;
+    aud:        number;
+    bitcoin:    number;
+    ether:      number;
+}
+
+
+
+
 export interface ExchangeClass {
     baseURL:                          string;
     marketName:                       string;
@@ -52,6 +68,9 @@ export interface ExchangeClass {
     marketSummaryFieldMapping(
         data: Array<any>
     ): marketSummary;
+    formatBalanceData(
+        data: Array<any>
+    ): exchangeBalanceStructure;
 }
 
 
@@ -78,8 +97,10 @@ export interface currencyStructure {
 
 
 export interface marketLastPriceStructure {
-    price:  number;
-    market: string;
+    price:    number;
+    bidPrice: number;
+    askPrice: number;
+    market:   string;
 }
 
 

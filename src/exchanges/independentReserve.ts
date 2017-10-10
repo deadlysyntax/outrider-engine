@@ -10,7 +10,7 @@ import * as crypto from 'crypto'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure } from '../libs/interfaces'
+import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure, exchangeBalanceStructure } from '../libs/interfaces'
 
 
 class IndependentReserve implements ExchangeClass {
@@ -141,6 +141,21 @@ class IndependentReserve implements ExchangeClass {
 
 
 
+
+    formatBalanceData( data: Array<any> ): exchangeBalanceStructure {
+        return {
+            marketName: this.marketName,
+            aud: data.filter( ( currency: any ) => {
+                return currency.CurrencyCode.toLowerCase() === this.currencyCodes['aud']
+            }).map( ( currency: any ) => currency.TotalBalance )[0],
+            bitcoin: data.filter( ( currency: any ) => {
+                return currency.CurrencyCode.toLowerCase() === this.currencyCodes['bitcoin']
+            }).map( ( currency: any ) => currency.TotalBalance )[0],
+            ether: data.filter( ( currency: any ) => {
+                return currency.CurrencyCode.toLowerCase() === this.currencyCodes['ether']
+            }).map( ( currency: any ) => currency.TotalBalance )[0],
+        }
+    }
 
 
 

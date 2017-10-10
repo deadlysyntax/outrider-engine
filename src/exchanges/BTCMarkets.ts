@@ -7,7 +7,7 @@ import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/catch'
 import * as crypto from 'crypto'
 
-import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure } from '../libs/interfaces'
+import { ExchangeClass, marketSummary, feeStructure, currencyStructure, currencyCodeStructure, exchangeBalanceStructure } from '../libs/interfaces'
 
 import * as dotenv from 'dotenv'
 dotenv.config()
@@ -74,12 +74,9 @@ class BTCMarkets implements ExchangeClass {
         // Need this for signature
         let url       = '/account/balance'
         let nonce     = (new Date()).getTime() // Use timestamp as iterating nonce
-
-
         let signature = crypto.createHmac('sha512', new Buffer(this.apiSecret, 'base64'))
                            .update(`${url}\n${nonce}\n`)
                            .digest('base64')
-        console.log(signature)
         //
         let options = {
             method: 'GET',
@@ -125,6 +122,24 @@ class BTCMarkets implements ExchangeClass {
             lastPrice: data.lastPrice,
             bidPrice:  data.bestBid,
             askPrice:  data.bestAsk,
+        }
+    }
+
+
+
+
+    formatBalanceData( data: Array<any> ): exchangeBalanceStructure {
+        return {
+            marketName: this.marketName,
+            aud: data.filter( ( currency: any ) => {
+                return currency.currency === this.currencyCodes['aud']
+            }).map( ( currency: any ) => currency.balance )[0],
+            bitcoin: data.filter( ( currency: any ) => {
+                return currency.currency === this.currencyCodes['bitcoin']
+            }).map( ( currency: any ) => currency.balance )[0],
+            ether: data.filter( ( currency: any ) => {
+                return currency.currency === this.currencyCodes['ether']
+            }).map( ( currency: any ) => currency.balance )[0],
         }
     }
 

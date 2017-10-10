@@ -36,10 +36,10 @@ class Arbitrage {
             let fees = this.exchanges[buy.market].feeStructure()
             return {
                 exchange:      buy.market,
-                basePrice:     buy.price,
+                basePrice:     buy.askPrice,
                 feePercent:    fees.tradingFee,
-                feeCalculated: ( (  buy.price / 100 ) * fees.tradingFee ),
-                totalPrice:    ( ( (  buy.price / 100 ) * fees.tradingFee ) + buy.price )
+                feeCalculated: ( (  buy.askPrice / 100 ) * fees.tradingFee ),
+                totalPrice:    ( ( (  buy.askPrice / 100 ) * fees.tradingFee ) + buy.askPrice )
             }
         })()
 
@@ -47,10 +47,10 @@ class Arbitrage {
             let fees = this.exchanges[sell.market].feeStructure()
             return {
                 exchange:      sell.market,
-                basePrice:     sell.price,
+                basePrice:     sell.bidPrice,
                 feePercent:    fees.tradingFee,
-                feeCalculated: ( ( sell.price / 100 ) * fees.tradingFee ),
-                totalPrice:    ( sell.price - ( ( ( sell.price / 100 ) * fees.tradingFee ) ) )
+                feeCalculated: ( ( sell.bidPrice / 100 ) * fees.tradingFee ),
+                totalPrice:    ( sell.bidPrice - ( ( ( sell.bidPrice / 100 ) * fees.tradingFee ) ) )
             }
         })()
 
@@ -77,7 +77,7 @@ class Arbitrage {
         })()
         arbitrageReport.profitLoss        = ( sellFees.totalPrice - buyFees.totalPrice - arbitrageReport.rebaseFee.convertedFiatFee )
         arbitrageReport.thresholdMet      = ( arbitrageReport.profitLoss > config.profitThreshold )
-        arbitrageReport.profitLossPercent = ( ( arbitrageReport.profitLoss / buy.price ) * 100 )
+        arbitrageReport.profitLossPercent = ( ( arbitrageReport.profitLoss / buy.askPrice ) * 100 )
         return arbitrageReport
     }
 
