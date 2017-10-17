@@ -63,4 +63,4 @@ dist
 .DS_Store
 
 # Database
-# db/outrider.sqlite
+db/outrider.sqlite
