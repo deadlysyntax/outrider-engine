@@ -60,7 +60,7 @@ describe('Market Report Builder', () => {
   it('accurately calculates spread using bid/ask', () => {
       let report           = buildMarketReport(mock.configUseAskBid).method( mock.marketStructureLowToHigh, defaults.reportStructure, mock.currencyStructure )
       let reportWithSpread = calculateSpread(mock.configUseAskBid).method( mock.marketStructureLowToHigh, report, mock.currencyStructure )
-      expect(report.spread).to.equal(0)
+      expect(report.spread).to.equal(50)
   })
 
 
@@ -70,7 +70,7 @@ describe('Market Report Builder', () => {
   it('accurately calculates spread using bid/ask and reversed rank', () => {
       let report           = buildMarketReport(mock.configUseAskBid).method( mock.marketStructureHighToLow, defaults.reportStructure, mock.currencyStructure )
       let reportWithSpread = calculateSpread(mock.configUseAskBid).method( mock.marketStructureHighToLow, report, mock.currencyStructure )
-      expect(report.spread).to.equal(0)
+      expect(report.spread).to.equal(50)
   })
 
 
@@ -80,21 +80,26 @@ describe('Market Report Builder', () => {
       let report              = buildMarketReport(mock.configUseLastPrice).method( mock.marketStructureLowToHigh, defaults.reportStructure, mock.currencyStructure )
       let reportWithSpread    = calculateSpread(mock.configUseLastPrice).method( mock.marketStructureLowToHigh, report, mock.currencyStructure )
       let reportWithArbitrage = arbitrageIdentifier(mock.configUseLastPrice, { MarketOne, MarketTwo }).method( mock.marketStructureLowToHigh, reportWithSpread, mock.currencyStructure )
-      expect(report.arbitrageCalculations.buy).to.deep.equal({
-          exchange: 'MarketTwo',
-          basePrice: 3500,
-          feePercent: 0.85,
-          feeCalculated: 29.75,
-          totalPrice: 3529.75
+      expect(report.arbitrageCalculations).to.deep.equal({
+          buy: {
+              exchange: 'MarketTwo',
+              basePrice: 3500,
+              feePercent: 0.85,
+              feeCalculated: 29.75,
+              totalPrice: 3529.75
+          },
+          sell: {
+              exchange: 'MarketOne',
+              basePrice: 4500,
+              feePercent: 0.85,
+              feeCalculated: 38.25,
+              totalPrice: 4461.75
+          },
+          rebaseFee: { cryptoFee: 0.0006, convertedFiatFee: 2.0999999999999996 },
+          profitLoss: 929.9,
+          profitLossPercent: 26.56857142857143,
+          thresholdMet: true
       })
-      expect( report.arbitrageCalculations.sell).to.deep.equal({
-          exchange: 'MarketOne',
-          basePrice: 4500,
-          feePercent: 0.85,
-          feeCalculated: 38.25,
-          totalPrice: 4461.75
-      })
-
   })
 
 
@@ -102,24 +107,27 @@ describe('Market Report Builder', () => {
       let report              = buildMarketReport(mock.configUseAskBid).method( mock.marketStructureLowToHigh, defaults.reportStructure, mock.currencyStructure )
       let reportWithSpread    = calculateSpread(mock.configUseAskBid).method( mock.marketStructureLowToHigh, report, mock.currencyStructure )
       let reportWithArbitrage = arbitrageIdentifier(mock.configUseAskBid, { MarketOne, MarketTwo }).method( mock.marketStructureLowToHigh, reportWithSpread, mock.currencyStructure )
-      console.log(reportWithArbitrage)
-      /*
-      expect(report.arbitrageCalculations.buy).to.deep.equal({
-          exchange: 'MarketTwo',
-          basePrice: 3500,
-          feePercent: 0.85,
-          feeCalculated: 29.75,
-          totalPrice: 3529.75
-      })
-      expect( report.arbitrageCalculations.sell).to.deep.equal({
-          exchange: 'MarketOne',
-          basePrice: 4500,
-          feePercent: 0.85,
-          feeCalculated: 38.25,
-          totalPrice: 4461.75
-      })
-      */
 
+      expect(report.arbitrageCalculations).to.deep.equal({
+          buy: {
+              exchange: 'MarketTwo',
+              basePrice: 4000,
+              feePercent: 0.85,
+              feeCalculated: 34,
+              totalPrice: 4034
+          },
+          sell: {
+              exchange: 'MarketOne',
+              basePrice: 4050,
+              feePercent: 0.85,
+              feeCalculated: 34.425,
+              totalPrice: 4015.575
+          },
+          rebaseFee: { cryptoFee: 0.0006, convertedFiatFee: 2.4 },
+          profitLoss: -20.82500000000018,
+          profitLossPercent: -0.5206250000000046,
+          thresholdMet: false
+      })
   })
 
 })

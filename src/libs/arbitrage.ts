@@ -3,9 +3,9 @@ import { Observer } from 'rxjs/Observer'
 import 'rxjs/add/observable/forkJoin'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/operator/map'
-import config from '../config'
 
-import { reportStructure, arbitrageCalculationStructure, tradeCalculationStructure } from './interfaces'
+
+import { reportStructure, arbitrageCalculationStructure, tradeCalculationStructure, configStructure } from './interfaces'
 
 import { btcMarkets as BTCMarkets } from '../exchanges/BTCMarkets'
 import { independentReserve as IndependentReserve } from '../exchanges/independentReserve'
@@ -13,11 +13,13 @@ import { independentReserve as IndependentReserve } from '../exchanges/independe
 
 class Arbitrage {
 
-    exchanges: any = {}
+    exchanges: any                = {}
+    config:    configStructure
 
-    constructor( exchanges: any ) {
+    constructor( exchanges: any, config: configStructure ) {
         // Proxy class to help us dynamically call these classes
         this.exchanges = exchanges
+        this.config    = config
     }
 
 
@@ -30,8 +32,8 @@ class Arbitrage {
         let sell = report.rank[0]
 
         let tradeRate = {
-            buyPrice:  ( config.useLastTradePrice === true ? buy.lastPrice  : buy.askPrice ),
-            sellPrice: ( config.useLastTradePrice === true ? sell.lastPrice : sell.bidPrice ),
+            buyPrice:  ( this.config.useLastTradePrice === true ? buy.lastPrice  : buy.askPrice ),
+            sellPrice: ( this.config.useLastTradePrice === true ? sell.lastPrice : sell.bidPrice ),
         }
 
         let buyFees = (() => {
@@ -73,12 +75,13 @@ class Arbitrage {
             // Fee to transfer the purchased coin from the buying to the selling exchange in bitcoin
             return fees[report.currencies.base+'Withdrawl']
         })()
+
         arbitrageReport.rebaseFee.convertedFiatFee = (() => {
             // Convert coin into 'against' currency
             return ( tradeRate.buyPrice * arbitrageReport.rebaseFee.cryptoFee )
         })()
         arbitrageReport.profitLoss        = ( sellFees.totalPrice - buyFees.totalPrice - arbitrageReport.rebaseFee.convertedFiatFee )
-        arbitrageReport.thresholdMet      = ( arbitrageReport.profitLoss > config.profitThreshold )
+        arbitrageReport.thresholdMet      = ( arbitrageReport.profitLoss > this.config.profitThreshold )
         arbitrageReport.profitLossPercent = ( ( arbitrageReport.profitLoss / tradeRate.buyPrice ) * 100 )
         return arbitrageReport
     }

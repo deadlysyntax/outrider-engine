@@ -96,7 +96,7 @@ export let arbitrageIdentifier = ( config: configStructure, exchanges: any ) => 
         name:   'arbitrageIdentifier',
         method: ( markets: Array<any>, report: reportStructure, currencies: currencyStructure ) => {
             // This will do all our calculations for arbitrage
-            report.arbitrageCalculations = new Arbitrage(exchanges).calculate(report)
+            report.arbitrageCalculations = new Arbitrage(exchanges, config).calculate(report)
             return report
         }
     }

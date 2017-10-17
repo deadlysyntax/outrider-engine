@@ -4,14 +4,14 @@ export let marketStructureHighToLow = [{
     dayHigh:   5000,
     dayLow:    4000,
     lastPrice: 4500,
-    bidPrice:  4000,
+    bidPrice:  4050,
     askPrice:  5000
 }, {
     name:      'MarketTwo',
     dayHigh:   4000,
     dayLow:    3000,
     lastPrice: 3500,
-    bidPrice:  3000,
+    bidPrice:  3050,
     askPrice:  4000
 }]
 
@@ -24,7 +24,7 @@ export let marketStructureLowToHigh = [
     dayHigh:   4000,
     dayLow:    3000,
     lastPrice: 3500,
-    bidPrice:  3000,
+    bidPrice:  3050,
     askPrice:  4000
 },
 {
@@ -32,7 +32,7 @@ export let marketStructureLowToHigh = [
     dayHigh:   5000,
     dayLow:    4000,
     lastPrice: 4500,
-    bidPrice:  4000,
+    bidPrice:  4050,
     askPrice:  5000
 }]
 
