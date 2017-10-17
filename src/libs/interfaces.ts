@@ -11,6 +11,14 @@ export interface marketSummary {
 
 
 
+export interface configStructure {
+    profitThreshold:   number;
+    tradePercent:      number;
+    useLastTradePrice: boolean;
+}
+
+
+
 
 export interface feeStructure {
     [key:string]:     any;
@@ -97,7 +105,7 @@ export interface currencyStructure {
 
 
 export interface marketLastPriceStructure {
-    price:    number;
+    lastPrice:    number;
     bidPrice: number;
     askPrice: number;
     market:   string;

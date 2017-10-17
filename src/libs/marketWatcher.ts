@@ -7,6 +7,9 @@ import 'rxjs/add/operator/catch'
 
 import { ExchangeClass, pluginStructure, currencyStructure, reportStructure } from './interfaces'
 
+
+import * as defaults from './defaults'
+
 class MarketWatcher {
 
     markets:    Array<ExchangeClass>
@@ -41,37 +44,7 @@ class MarketWatcher {
                     // data needed to make decisions.
                     let reportData = this.plugins.reduce( ( report, plugin ) => {
                         return plugin.method( market, report, currencies )
-                    }, {
-                        rank:  [],
-                        spread: 0,
-                        currencies: {
-                            base:   '',
-                            against: ''
-                        },
-                        arbitrageCalculations: {
-                            buy:          {
-                                exchange:      {},
-                                basePrice:     0,
-                                feePercent:    0,
-                                feeCalculated: 0,
-                                totalPrice:    0
-                            },
-                            sell:         {
-                                exchange:      {},
-                                basePrice:     0,
-                                feePercent:    0,
-                                feeCalculated: 0,
-                                totalPrice:    0
-                            },
-                            rebaseFee:    {
-                                cryptoFee:        0,
-                                convertedFiatFee: 0
-                            },
-                            profitLoss:        0,
-                            profitLossPercent: 0,
-                            thresholdMet:      false
-                        }
-                    })
+                    }, defaults.reportStructure )
                     // Send the compiled data back to the watcher
                     observer.next(reportData)
                 },

@@ -13,15 +13,14 @@ import { independentReserve as IndependentReserve } from '../exchanges/independe
 
 class Arbitrage {
 
-    exchanges: any
+    exchanges: any = {}
 
-    constructor() {
+    constructor( exchanges: any ) {
         // Proxy class to help us dynamically call these classes
-        this.exchanges = {
-            IndependentReserve,
-            BTCMarkets
-        }
+        this.exchanges = exchanges
     }
+
+
 
 
     calculate( report: reportStructure ): arbitrageCalculationStructure {
@@ -30,16 +29,19 @@ class Arbitrage {
         let buy  = report.rank[report.rank.length-1]
         let sell = report.rank[0]
 
-//        console.log(buy)
+        let tradeRate = {
+            buyPrice:  ( config.useLastTradePrice === true ? buy.lastPrice  : buy.askPrice ),
+            sellPrice: ( config.useLastTradePrice === true ? sell.lastPrice : sell.bidPrice ),
+        }
 
         let buyFees = (() => {
             let fees = this.exchanges[buy.market].feeStructure()
             return {
                 exchange:      buy.market,
-                basePrice:     buy.askPrice,
+                basePrice:     tradeRate.buyPrice,
                 feePercent:    fees.tradingFee,
-                feeCalculated: ( (  buy.askPrice / 100 ) * fees.tradingFee ),
-                totalPrice:    ( ( (  buy.askPrice / 100 ) * fees.tradingFee ) + buy.askPrice )
+                feeCalculated: ( (  tradeRate.buyPrice / 100 ) * fees.tradingFee ),
+                totalPrice:    ( ( (  tradeRate.buyPrice / 100 ) * fees.tradingFee ) + tradeRate.buyPrice )
             }
         })()
 
@@ -47,10 +49,10 @@ class Arbitrage {
             let fees = this.exchanges[sell.market].feeStructure()
             return {
                 exchange:      sell.market,
-                basePrice:     sell.bidPrice,
+                basePrice:     tradeRate.sellPrice,
                 feePercent:    fees.tradingFee,
-                feeCalculated: ( ( sell.bidPrice / 100 ) * fees.tradingFee ),
-                totalPrice:    ( sell.bidPrice - ( ( ( sell.bidPrice / 100 ) * fees.tradingFee ) ) )
+                feeCalculated: ( ( tradeRate.sellPrice / 100 ) * fees.tradingFee ),
+                totalPrice:    ( tradeRate.sellPrice - ( ( ( tradeRate.sellPrice / 100 ) * fees.tradingFee ) ) )
             }
         })()
 
@@ -73,14 +75,14 @@ class Arbitrage {
         })()
         arbitrageReport.rebaseFee.convertedFiatFee = (() => {
             // Convert coin into 'against' currency
-            return ( buy.price * arbitrageReport.rebaseFee.cryptoFee )
+            return ( tradeRate.buyPrice * arbitrageReport.rebaseFee.cryptoFee )
         })()
         arbitrageReport.profitLoss        = ( sellFees.totalPrice - buyFees.totalPrice - arbitrageReport.rebaseFee.convertedFiatFee )
         arbitrageReport.thresholdMet      = ( arbitrageReport.profitLoss > config.profitThreshold )
-        arbitrageReport.profitLossPercent = ( ( arbitrageReport.profitLoss / buy.askPrice ) * 100 )
+        arbitrageReport.profitLossPercent = ( ( arbitrageReport.profitLoss / tradeRate.buyPrice ) * 100 )
         return arbitrageReport
     }
 
 }
 
-export let arbitrage = new Arbitrage()
+export let arbitrage = Arbitrage

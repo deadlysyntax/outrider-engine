@@ -9,6 +9,8 @@ import { reportStructure } from './libs/interfaces'
 import MarketWatcher from './libs/marketWatcher'
 import Trader from './libs/trader'
 
+import config from './config'
+
 
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin'
@@ -40,7 +42,7 @@ let run = () => {
     let MarketSubscription = new MarketWatcher(
             [ BTCMarkets, IndependentReserve ],
             { base: currency[0], against: currency[1] },
-            [ buildMarketReport(), calculateSpread(), arbitrageIdentifier() ]
+            [ buildMarketReport(config), calculateSpread(config), arbitrageIdentifier(config, { BTCMarkets, IndependentReserve } ) ]
     )
 
 

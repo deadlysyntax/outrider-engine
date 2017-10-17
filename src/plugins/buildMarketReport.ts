@@ -1,30 +1,44 @@
-import { reportStructure, marketSummary, currencyStructure } from '../libs/interfaces'
+import { reportStructure, marketSummary, currencyStructure, configStructure } from '../libs/interfaces'
 import { arbitrage as Arbitrage } from '../libs/arbitrage'
 
 
-export let buildMarketReport = () => {
+
+//
+// Adds market data to the report object and ranks them highest to lowest
+//
+export let buildMarketReport = ( config: configStructure ) => {
     return {
         name:   'buildMarketReport',
         method: ( markets: Array<marketSummary>, report: reportStructure, currencies: currencyStructure ) => {
-            //console.log(markets)
-            // Rank the markets and
-            report.rank = markets//.sort( ( a, b ) => {
-            //    return a.lastPrice - a.lastPrice
-            //})
-            .map( market => {
+            // Rank the markets and add them to the report
+            report.rank = markets.map( market => {
                 return {
-                    price:    market.lastPrice,
-                    bidPrice: market.bidPrice,
-                    askPrice: market.askPrice,
-                    market:   market.name
+                    lastPrice:  market.lastPrice,
+                    bidPrice:   market.bidPrice,
+                    askPrice:   market.askPrice,
+                    market:     market.name
                 }
             })
-            // One final check to make sure we have the highrest priced bid at rank[0]
+
+            // Make sure we have the highrest priced bid at rank[0]
             // and the lowest bid at the end of the array
-            //if( report.rank[0].price < report.rank[report.rank.length-1].price)
-            //    report.rank.reverse()
-            // Note currencies
-            report.currencies = currencies
+            if( config.useLastTradePrice === true ) {
+                if( report.rank[0].lastPrice < report.rank[report.rank.length-1].lastPrice)
+                    report.rank.reverse()
+            }
+
+            // This is if we are using the bid/ask orderbook prices instead of the last trade price
+            if( config.useLastTradePrice !== true ) {
+                if( report.rank[report.rank.length-1].bidPrice - report.rank[0].askPrice > report.rank[0].bidPrice - report.rank[report.rank.length-1].askPrice )
+                    report.rank.reverse()
+            }
+
+            // Set currencies
+            report.currencies = {
+                base:    currencies.base,
+                against: currencies.against
+            }
+            //
             return report
         }
     }
@@ -35,44 +49,35 @@ export let buildMarketReport = () => {
 
 
 
-export let calculateSpread = () => {
+
+
+
+//
+// Adds the spread
+//
+// We want to buy on one exchange cheaper than we can sell on another
+// When the buy price(bid) on one exchange is lower than the sell price(ask) on another, we have a spread
+// We can also use a simplified calculation that uses last trade price - assuming that a trade can be made
+// at the last price instead of going off the order book
+export let calculateSpread = ( config: configStructure ) => {
     return {
         name:   'buildMarketReport',
         method: ( markets: Array<any>, report: reportStructure, currencies: currencyStructure ) => {
-            // We want to buy on one exchange cheaper than we can sell on another
-            // When the buy price(bid) on one exchange is lower than the sell price(ask) on another, we have a spread
-
-
             // Calculate true spread where buy(bid) on one exchange is lower than the sell(ask) on another
             // If either of these equate to less than zero we've got our spread
             // well use the lowest one as our spread
-            let interimSpread: number       = 0
-            let interimRank:   Array<any>   = Array.from(report.rank)
-            //
-            //if( ( report.rank[report.rank.length-1].askPrice - report.rank[0].bidPrice ) < 0 ) {
-                interimSpread  = ( report.rank[report.rank.length-1].askPrice - report.rank[0].bidPrice )
-                //interimRank    = [report.rank[report.rank.length-1], report.rank[0] ]
-            //}
-            //
-            if( (report.rank[0].askPrice - report.rank[report.rank.length-1].bidPrice ) < interimSpread ) {
-                interimSpread = (report.rank[0].askPrice - report.rank[report.rank.length-1].bidPrice )
-                interimRank   = [report.rank[0], report.rank[report.rank.length-1] ]
+            if( config.useLastTradePrice !== true ) {
+                report.spread =  Math.abs( report.rank[0].bidPrice - report.rank[report.rank.length-1].askPrice )
+                return report
+            }
+            else {
+                // calculate simplified version of 'spread' between exchanges
+                // so just calculate the difference in bid price and make it a positive number
+                // This is just so we cant tell if it's worth investigating further
+                report.spread = Math.abs( report.rank[0].lastPrice - report.rank[report.rank.length-1].lastPrice )
+                return report
             }
 
-            report.spread = interimSpread
-            report.rank   = interimRank
-            return report
-
-
-            //console.log( interimSpread, interimRank )
-
-
-            // calculate simplified version of 'spread' between exchanges
-            // so just calculate the difference in bid price and make it a positive number
-            // This is just so we cant tell if it's worth investigating further
-            //report.spread = Math.abs( report.rank[0].price - report.rank[report.rank.length-1].price )
-
-            //return report
         }
     }
 }
@@ -83,12 +88,15 @@ export let calculateSpread = () => {
 
 
 
-export let arbitrageIdentifier = () => {
+
+
+
+export let arbitrageIdentifier = ( config: configStructure, exchanges: any ) => {
     return {
         name:   'arbitrageIdentifier',
         method: ( markets: Array<any>, report: reportStructure, currencies: currencyStructure ) => {
             // This will do all our calculations for arbitrage
-            report.arbitrageCalculations = Arbitrage.calculate(report)
+            report.arbitrageCalculations = new Arbitrage(exchanges).calculate(report)
             return report
         }
     }
