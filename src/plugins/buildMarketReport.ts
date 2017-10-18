@@ -101,3 +101,23 @@ export let arbitrageIdentifier = ( config: configStructure, exchanges: any ) => 
         }
     }
 }
+
+
+
+
+
+
+
+
+
+export let addTimestamp = ( config: configStructure ) => {
+    return {
+        name: 'addTimestamp',
+        method: ( markets: Array<any>, report: reportStructure, currencies: currencyStructure ) => {
+            // Just to date our completed report
+            report.timestamp = Date.now()
+            report._id       = report.timestamp
+            return report
+        }
+    }
+}

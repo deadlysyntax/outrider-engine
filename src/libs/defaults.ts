@@ -8,6 +8,7 @@ export let reportStructure = {
         base:    '',
         against: ''
     },
+    timestamp: 0,
     arbitrageCalculations: {
         buy:          {
             exchange:      {},

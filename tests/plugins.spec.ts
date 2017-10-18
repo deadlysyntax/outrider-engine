@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import * as chaiDate from 'chai-date'
 import 'mocha'
 
 
@@ -6,7 +7,7 @@ import * as mock from './mockData/index'
 
 import * as defaults from '../src/libs/defaults'
 
-import { buildMarketReport, calculateSpread, arbitrageIdentifier } from '../src/plugins/buildMarketReport'
+import { buildMarketReport, calculateSpread, arbitrageIdentifier, addTimestamp } from '../src/plugins/buildMarketReport'
 
 import { marketOne as MarketOne } from './mockData/marketOne'
 import { marketTwo as MarketTwo } from './mockData/marketTwo'
@@ -46,7 +47,7 @@ describe('Market Report Builder', () => {
 
 
 
-  it('accurately calculates spread using last price', () => {
+  it('should accurately calculates spread using last price', () => {
       let report           = buildMarketReport(mock.configUseLastPrice).method( mock.marketStructureLowToHigh, defaults.reportStructure, mock.currencyStructure )
       let reportWithSpread = calculateSpread(mock.configUseLastPrice).method( mock.marketStructureLowToHigh, report, mock.currencyStructure )
       expect(report.spread).to.equal(1000)
@@ -57,7 +58,7 @@ describe('Market Report Builder', () => {
 
 
 
-  it('accurately calculates spread using bid/ask', () => {
+  it('should accurately calculates spread using bid/ask', () => {
       let report           = buildMarketReport(mock.configUseAskBid).method( mock.marketStructureLowToHigh, defaults.reportStructure, mock.currencyStructure )
       let reportWithSpread = calculateSpread(mock.configUseAskBid).method( mock.marketStructureLowToHigh, report, mock.currencyStructure )
       expect(report.spread).to.equal(50)
@@ -67,10 +68,19 @@ describe('Market Report Builder', () => {
 
 
 
-  it('accurately calculates spread using bid/ask and reversed rank', () => {
+  it('should accurately calculates spread using bid/ask and reversed rank', () => {
       let report           = buildMarketReport(mock.configUseAskBid).method( mock.marketStructureHighToLow, defaults.reportStructure, mock.currencyStructure )
       let reportWithSpread = calculateSpread(mock.configUseAskBid).method( mock.marketStructureHighToLow, report, mock.currencyStructure )
       expect(report.spread).to.equal(50)
+  })
+
+
+
+  it('should calculate timestamp', () => {
+      let report              = buildMarketReport(mock.configUseAskBid).method( mock.marketStructureHighToLow, defaults.reportStructure, mock.currencyStructure )
+      let reportWithTimestamp = addTimestamp(mock.configUseAskBid).method( mock.marketStructureHighToLow, report, mock.currencyStructure )
+      expect(report.timestamp.toString().length).to.equal(Date.now().toString().length)
+      expect(report.timestamp).to.be.at.most(Date.now())
   })
 
 

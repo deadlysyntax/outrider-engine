@@ -145,4 +145,5 @@ export interface reportStructure {
     spread:                number;
     currencies:            currencyStructure;
     arbitrageCalculations: arbitrageCalculationStructure;
+    timestamp:             number;
 }
