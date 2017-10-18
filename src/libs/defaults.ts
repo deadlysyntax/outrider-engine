@@ -2,6 +2,7 @@ import * as interfaces from '../../src/libs/interfaces'
 
 
 export let reportStructure = {
+    _id:  0,
     rank:  [],
     spread: 0,
     currencies: {

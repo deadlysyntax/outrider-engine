@@ -141,6 +141,7 @@ export interface arbitrageCalculationStructure {
 
 
 export interface reportStructure {
+    _id:                   any;
     rank:                  Array<marketLastPriceStructure>;
     spread:                number;
     currencies:            currencyStructure;
