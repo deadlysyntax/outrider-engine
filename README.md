@@ -10,9 +10,11 @@ This part of the app monitors the markets, identifies arbitrage opportunities an
 This provides access to our database of trading information, including providing charting data for the interface to display graphs.
 ***
 ### Installation:
-Outrider Engine is standalone sofware and is controlled via the command line.
+Outrider Engine is standalone software and is controlled via the command line.
 
-Download from github.
+Make sure you have [MongoDB server](https://docs.mongodb.com/manual/administration/install-community/) installed and running.
+
+Download Outrider from github.
 `git clone git@github.com:deadlysyntax/outrider-engine.git`
 
 Move into the bot directory
