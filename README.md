@@ -26,7 +26,7 @@ To run:
 
 The `-b` flag signals the trading pairs you would like to monitor. Open a new shell and use a different pair if you'd like to trade different options.
 
-To run live trades add the `trade` keyword to the command.
+To run live trades add the `trade` keyword to the command. Without this keyword, it will monitor the markets but not act on any opportunities it finds.
 `npm run start -b bitcoin/aud trade`
 
 To serve API endpoints
