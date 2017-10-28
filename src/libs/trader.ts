@@ -25,7 +25,7 @@ class Trader {
             BTCMarkets,
             IndependentReserve
         }
-        this.toTrade = this.tradeDecision()
+        this.toTrade = false //this.tradeDecision()
         console.log('Initiating Arbitrage Trade')
         return this
     }
@@ -36,10 +36,14 @@ class Trader {
 
     initialize(): Observable<any> {
         return Observable.create( ( observer: any ) => {
-            if( this.toTrade !== true )
-                observer.error('Decided to not trade')
-            // Place trade orders
-            observer.complete()
+
+            this.tradeDecision().subscribe( () => {
+                // Send trade signal if ready
+                observer.complete()
+            },
+            (error) => {
+                observer.error(error)
+            })
         })
     }
 
@@ -47,19 +51,20 @@ class Trader {
 
 
 
-    tradeDecision(): boolean {
+    tradeDecision(): Observable<boolean> {
         console.log('Checking funds across exchanges')
-        this.getExchangeBalances().subscribe( ( response: exchangeBalanceSummary ) => {
-            // Calculate if we have enough to trade
-            //if( response.buy.bitcoin >  )
-            //console.log(response)
+        return Observable.create( ( observer: Observer<any>) => {
+            this.getExchangeBalances().subscribe( ( response: exchangeBalanceSummary ) => {
+                // Calculate if we have enough to trade
+                if( ! this.verifyFunds(this.report, response, config.tradePercent) ) {
+                    console.log('Funds not available')
+                    observer.error(false)
+                }
+                console.log('Ready to trade')
+                observer.next(true)
+            })
         })
-
-
-
-        return true
     }
-
 
 
 
@@ -82,6 +87,18 @@ class Trader {
                 observer.next({ buy, sell })
             })
         })
+    }
+
+
+
+
+
+
+    // Confirm that there is enough funds in the selected exchanges to complete the trade
+    verifyFunds( report: reportStructure,  balanceSummary: exchangeBalanceSummary, tradePercent: number ): boolean {
+        // The defaultTradeValue is the percentage of the base token we're going to buy and sell
+        console.log(report, balanceSummary, tradePercent)
+        return true
     }
 
 
