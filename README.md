@@ -39,7 +39,7 @@ To configure trading thresholds and other global options, edit `src/config.ts` a
 To add your own exchange API keys, rename `.env.example` to just `.env` and add your keys to each option as provided by the sample.
 
 ***
-The [interface](https://github.com/deadlysyntax/outrider-interface) is an Ionic 2 app which calls the data found and stored by the engine.
+The [interface](https://github.com/deadlysyntax/outrider-interface) is an Ionic app provides nice visualizations about the data stored by the engine.
 
 ***
 Cryptocurrency trading is not for noobs. Please do your own research and understand what Cryptocurrency Arbitrage is before using this software. You use Outrider at your own risk. We take no responsibility for how this software is used or the results that come from using it.
